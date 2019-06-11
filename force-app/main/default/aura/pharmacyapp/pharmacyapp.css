@@ -1,0 +1,37 @@
+.THIS .HOG_Progressbar{
+    background-color:white;
+    border-radius:9px;
+        padding: 0.25rem;
+
+    
+}
+.THIS .HOG_LayoutButton{
+        background-color:white;
+    border-radius:9px;
+   
+}
+.THIS .HOG_Nextbut{margin-left:1rem;}
+.THIS .HOG_buttonstyle{
+        margin-top: -49px;    MARGIN-BOTTOM: 7REM;
+
+}
+.THIS .HOG_ButtonLayout{
+        margin-left: -11px;
+
+}
+    .THIS .HOG_Insurance_buttonstyle
+{margin-top: -118px;
+    margin-bottom: 3REM;
+}
+.THIS .HOG_OrderIns_buttonstyle{
+    margin-top: -53px;}
+
+    .THIS .HOG_search_buttonstyle{    margin-top: -56px;
+}
+
+.THIS .HOG_OrderInsLayout{
+   background: white;
+    border-radius: 0 0 9px 9px;
+    padding: .5rem;
+    margin-top: -17px;
+}

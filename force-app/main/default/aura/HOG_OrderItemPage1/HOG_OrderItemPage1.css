@@ -1,0 +1,89 @@
+.THIS .HOG_InnerGrid{width:100%;    border: none;background: white;
+    width: 100%;
+    padding: 0rem;
+    border: none;
+   
+}
+.THIS .HOG_LayoutBorder{
+        background-color:white !important;
+  
+  
+    border-radius:9px;
+   
+    padding-bottom:5rem;
+    padding-top: 0.25rem;
+
+
+}
+.THIS .HOG_Headstyle{
+   
+      padding: .25rem;
+    text-align: left;
+    border-radius: 9px 9px 0 0;
+    border: none;
+    border-bottom: 1px solid rgb(221, 219, 218);
+    box-shadow: none;
+
+}
+
+.THIS .HOG_Shiptitle{
+        font-size: 22px;
+    font-weight: bold;
+        padding-left: 14px;
+
+}
+
+.THIS .HOG_customlab{
+    margin:9px;font-weight:bold;    font-size: 13px;    display: inline-flex;    padding-left: 8px;
+
+
+}
+.THIS .HOG_Clientval{
+    
+ display: inline-block;
+}
+
+.THIS .HOG_Labelstyle{
+    font-size:18px;   margin-left: 0.5rem;
+    
+}
+
+.THIS .HOG_Newbutton{
+    float: right;
+    margin-right: 9px;
+    margin-top: 3px;
+        margin-bottom: 3px;
+
+    
+}
+
+.THIS .HOG_HeaderStyle{    padding:0.5rem;background-color:grey;
+}
+.THIS .HOG_HeaderStyle>div{color:white !important;}
+
+.THIS .HOG_CustomSelect label{display:none;}
+   .THIS .HOG_CustomSelect select{ margin-top: 3px;
+}
+ .THIS .HOG_CustomSelect .slds-select_container:after {
+     pointer-events: none;
+     border-top: 7px solid #706e6b;
+     bottom: 12px;
+     border-left: 5px solid transparent;
+     border-right: 5px solid transparent;
+}
+ .THIS .HOG_CustomSelect .slds-select_container:before {
+     display:none;
+}
+
+.THIS .HOG_CustomInput label{display:none;}
+.THIS .HOG_CustomSelect {display: inline-flex;    margin-right: 0.25rem;
+
+}
+
+
+.THIS .HOG_Tabstyle{
+    padding: 5px;    border-bottom-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+       border:none;
+
+}

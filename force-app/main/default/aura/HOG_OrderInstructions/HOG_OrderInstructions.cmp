@@ -1,0 +1,154 @@
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <aura:attribute name="OrderId" type="String"/> 
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="Order" type="Order" default="{'sobjectType': 'Order'}"/> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+    
+    <aura:method name="PassingtoOrderReview" action="{!c.PassingtoOrderReview}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+     <aura:method name="backtoAddOrderItems" action="{!c.backtoAddOrderItems}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+           <div class="slds-grid slds-wrap slds-align_absolute-center HOG_LayoutBorder" style="    background: white;
+    border-radius: 9px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}">
+           
+ <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+
+   
+ 
+        <span class="slds-form-element__label HOG_Shiptitle">Order Instructions</span>
+       
+            <lightning:recordViewForm aura:id="viewForm" 
+                                      recordId="{!v.OrderId}"
+                                      objectApiName="Order">
+                
+                <lightning:outputField fieldName="Client_Name_C__c" class="HOG_customlab"/>
+                
+                
+            </lightning:recordViewForm>   
+     
+     
+    </div>
+    
+    </div>
+    
+    
+   
+    <lightning:recordEditForm  aura:id="editForm" onload="{!c.handleLoad}"
+                              
+                              onsuccess="{!c.saverecord}"
+                              recordId="{!v.OrderId}"
+                              objectApiName="Order"
+                              onsubmit="{!c.handleSubmit}">
+        
+        
+             
+        <div class="slds-grid slds-wrap  HOG_LayoutBorder">
+           
+  <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_6-of-12 HOG_OrderIns" >
+   
+    <span> 
+        
+      
+            <lightning:inputField aura:id = "DeliverByDateID" fieldName="Deliver_By_Date__c" value="{!v.Order.Deliver_By_Date__c}" />
+       
+           
+            <lightning:inputField aura:id = "Instructions"  fieldName="Instructions__c" value="{!v.Order.Instructions__c}" />
+            
+
+           
+            <lightning:inputField aura:id = "Rhpconsultant" fieldName="RPH_Consult__c" value="{!v.Order.RPH_Consult__c}"/>
+            
+        
+        
+      </span>
+    
+       
+                 
+            
+      
+            <!--	<div class="slds-clearfix slds-float_right"> <br></br>
+    
+       <lightning:button disabled="{!v.disabled}" variant="brand" type="submit" name="save" label="Next" />
+     </div>
+            <div class="slds-clearfix"><br></br>
+                <div class="slds-float_left">
+                    <lightning:button disabled="{!v.disabled}" variant="brand" onclick="{! c.Previous }" name="Previous" label="Previous" />
+                </div>
+                <div class="slds-clearfix slds-float_right">
+                    <lightning:button disabled="{!v.disabled}" variant="brand" type="submit" name="save" label="Next" />
+                </div>
+            </div>       
+        -->    
+            </div>
+      
+        
+         <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_3-of-12 slds-grid_vertical-align-start HOG_Datasec ">
+  <span>
+         <span class="slds-form-element__label HOG_Shiptitle">Previous Order Information</span>
+          <lightning:outputField fieldName="Previous_Order__c" class="HOG_customlab"/>
+            <div> <a onclick="{! c.openModel }" class="HOG_Prevdata">Previous Instructions</a></div>  
+             </span></div> </div>
+    </lightning:recordEditForm>
+   
+    <lightning:layout multipleRows="true"> 
+        <lightning:layoutItem size="6">
+          
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Previous Order Details</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <lightning:recordViewForm aura:id="viewForm" 
+                                      recordId="{!v.OrderId}"
+                                      objectApiName="Order">
+                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                
+                
+                
+                <lightning:outputField fieldName="Previous_Instructions__c" />
+                       
+
+                      </div>
+            </lightning:recordViewForm>
+                    <!--###### MODAL BOX FOOTER Part Start ######-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeModel }"/>
+                        
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+   
+            
+        </lightning:layoutItem>
+        
+    </lightning:layout> 
+      
+</aura:component>

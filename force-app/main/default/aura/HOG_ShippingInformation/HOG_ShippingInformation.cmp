@@ -1,0 +1,178 @@
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="selectedClientId" type="string"/>
+    <aura:attribute name="orderId" type="string"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject"/>
+    <aura:attribute name="accountId" type="string"/>
+    <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    <aura:attribute name="Orderforaddress" type="Order" default="{'sobjectType':'Order' }"/>
+    <aura:attribute name="Address" type="Address__c" default="{'sobjectType':'Address__c' }"/>
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <aura:attribute name="picklistValues" type="Object" />
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+    <aura:attribute name="clientName" type="Order"/>
+    <aura:attribute name="shipNamevalidation" type="Boolean" />
+    <aura:attribute name="shipCreatedRecordID" type="string"/>
+    
+    
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+    
+    <aura:method name="PassingtoShippingInformation" action="{!c.PassingtoShippingInformation}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+       
+    <aura:method name="backtoselectcomp" action="{!c.backtoselectcomp}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+   
+    <!--<div class="slds-text-heading_large">
+    
+    </div>-->
+   
+    <lightning:recordEditForm  objectApiName="Order" recordId="{!v.orderId}" >
+        
+        <div class="slds-grid slds-wrap slds-align_absolute-center HOG_LayoutBorder">
+           
+  <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12  ">
+   
+    <span> 
+        
+        <span class="slds-form-element__label HOG_Shiptitle">    Shipping Information</span>
+        <br/><br/>
+       <b><label for="clientname">Client Name</label></b>
+       <lightning:outputField aura:id="clientname" fieldName="Client_Name_C__c" class="HOG_customlab" variant="label-hidden" />
+        
+        
+        <lightning:inputField fieldName="Phone__c" aura:id = "Phone" class="HOG_customlab"/>
+        <lightning:inputField fieldName="Placed_By__c" aura:id = "PlacedBy" class="HOG_customlab"/>
+        <lightning:inputField fieldName="Ship_To_Name__c" aura:id = "ShipToName" class="HOG_customlab"/> 
+     
+		<div >
+            <div class="slds-size_10-of-12 HOG_Outerwid" >
+            <lightning:inputField  aura:id = "shipAddid" fieldName="Shipping_Address__c" 
+                                  onchange="{!c.onaddressChange}" value="{!v.shipCreatedRecordID}"  variant="label-hidden" class="HOG_Lookupwid HOG_customlab"/>
+		  </div>
+            <div class="" style="float:right;display:inline;    margin-top: -40px;">
+                <lightning:button variant="brand" onclick="{! c.openModel }" name="New" label="New" />
+                <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+                <aura:if isTrue="{!v.isOpen}">
+                    
+                    <!--###### MODAL BOX Start######--> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container " >
+                            <!-- ###### MODAL BOX HEADER Start ######-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeModel }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create New Shipping Address</h2>
+                            </header>
+                            <!--###### MODAL BOX BODY Part Start######-->
+                            <!--   <div class="slds-modal__content slds-p-left_x-small slds-p-right_x-small " >-->
+                            
+                            <lightning:recordEditForm aura:id="recordEditForm"
+                                                      objectApiName="Address__c"
+                                                      onsuccess="{!c.closeModel1}"
+                                                      onsubmit="{!c.handleSubmit}"
+                                                      >
+                                <lightning:messages />
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <div class="slds-grid slds-grid--pull-padded">
+                                        <div class="slds-p-horizontal--large slds-large-size--1-of-2 slds-medium-size--1-of-2 slds-small-size--1-of-1 slds-x-small-size--1-of-1 slds-m-bottom--medium">
+                                            <lightning:inputField fieldName="Name" aura:id="NameField" required ="true " />
+                                            <lightning:inputField fieldName="Street_Name_2__c" aura:id="StreetFieldID" required ="true " />
+                                            <lightning:inputField fieldName="City1__c" aura:id="CityFieldID" value="" required ="true "  />
+                                            <lightning:inputField fieldName="State1__c" aura:id="StateFieldID" value="" required ="true "  />
+                                            <lightning:inputField fieldName="County__c" aura:id="CoutyFieldID" value="" required ="true " />
+                                            <lightning:inputField fieldName="Zip_Code1__c" aura:id="ZipFieldID" value=""  required ="true "  />
+                                            <lightning:inputField fieldName="Account__c" aura:id="AccountID" value="{!v.accountId}" required ="true "/>
+                                        </div>
+                                        <div class="slds-p-horizontal--large slds-large-size--1-of-2 slds-medium-size--1-of-2 slds-small-size--1-of-1 slds-x-small-size--1-of-1 slds-m-bottom--medium">
+                                            
+                                            <lightning:inputField fieldName="Address_Purpose__c" aura:id="addreespurposeID" required ="true "/><br></br><br></br><br></br><br></br><br></br><br></br><br></br><br></br>
+                                            
+                                            <!--slds-m-bottom-center_small -->
+
+                                        </div>
+                                   
+                                    </div>
+                                    
+                                </div>
+                               
+                 			<footer class="slds-modal__footer">
+                              	 <lightning:button type="submit" label="Create new" variant="brand"/>
+
+                                   </footer>
+                               
+                            </lightning:recordEditForm>
+                            
+                            
+                            
+                            
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <!--###### MODAL BOX Part END Here ######-->
+                    
+                </aura:if>
+                
+        </div>
+        </div>
+        
+        <lightning:inputField  aura:id = "Signaturerequired" fieldName="Signature__c" class="HOG_customlab"  />
+		
+</span>
+    
+  </div>
+            
+ <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-grid_vertical-align-start HOG_Datasec ">
+  <span>
+		<div class="HOG_Labdata">
+      
+      		  <label class="HOG_Label">Street Name:</label>
+            <ui:outputText  value="{!v.Address.Name}" class="HOG_Value"/>
+            
+      
+      	</div>     
+     <div class="HOG_Labdata">
+
+            <label class="slds-form-element__label HOG_Label">Address Line2:</label>
+            <ui:outputText  value="{!v.Address.Street_Name_2__c}" class="HOG_Value"/>
+        </div>    
+    <div class="HOG_Labdata">
+
+            <label class="slds-form-element__label HOG_Label">City:</label>
+            <ui:outputText  value="{!v.Address.City1__c}" class="HOG_Value"/>
+       </div>
+     <div class="HOG_Labdata">
+
+            <label class="HOG_Label">State:</label>
+            <ui:outputText  value="{!v.Address.State1__c}" class="HOG_Value"/>
+        </div>
+      <div class="HOG_Labdata">
+
+            <label class="HOG_Label">Zip Code:</label>
+            <ui:outputText  value="{!v.Address.Zip_Code1__c}" class="HOG_Value" />
+       </div>
+       <!-- <div class="HOG_Labdata">
+            <label class="HOG_Label">Address Type:</label>
+            <ui:inputText  value="{!v.Address.Address_Type__c}" class="HOG_Value"/>
+        </div>-->
+      <div class="HOG_Labdata">
+
+            <label class="HOG_Label">Address Purpose:</label>
+            <ui:outputText  value="{!v.Address.Address_Purpose__c}" class="HOG_Value"/>
+         </div>  
+     </span></div>
+  
+       
+        </div>
+    
+    </lightning:recordEditForm>
+         
+</aura:component>

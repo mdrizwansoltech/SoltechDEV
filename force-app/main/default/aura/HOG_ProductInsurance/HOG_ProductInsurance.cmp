@@ -1,0 +1,46 @@
+<aura:component  controller="Pharmacycontroller"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+     <aura:attribute name="ProductInsuranceRecord" type="Product_Insurance__c" default="{'sobjectType':'Product_Insurance__c'}"/>
+     <aura:attribute name="rowIndexVal" type="String"/>
+     <aura:registerEvent name="HOG_ProductInsuranceRecordRowEvent" type="c:HOG_ProductInsuranceRecordRowEvent"/> 
+     <aura:attribute name="OrderItemRecordId" type="String"/>
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+     <aura:attribute name="ClientChatId" type="String"/> 
+     <aura:attribute name="orderId" type="String"/> 
+     <aura:attribute name="InsuranceCoverageId" type="String"/> 
+     <aura:attribute name="PA_Number" type="String"/> 
+    <aura:attribute name="InsuranceList" type="list"/>
+     <aura:attribute name="PANumberList" type="list"/>
+    
+    
+  <tr class="slds-text-title_caps">
+        <td> 
+            {!v.rowIndexVal + 1}
+        </td>
+       
+        <td>
+             <ui:inputSelect  aura:id="InsuranceCoverage" class="slds-select" 
+                             value="{!v.InsuranceCoverageId}"  change="{!c.CreateOrderInsurance}"/>
+         </td>
+       
+        
+        <td>
+             <ui:inputSelect  aura:id="PANumbers" class="slds-select" 
+                             value="{!v.PA_Number}" />
+         </td>
+       
+        <!-- <td>
+          <lightning:input name="PANumber" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.ProductInsuranceRecord.PA_Number__c}" /> 
+        </td>-->
+      
+     
+      
+        <td>
+                  <a onclick="{!c.removeInsuranceRow}">
+                   <lightning:icon variant="error" iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                   <span class="slds-assistive-text">Delete Icon</span>
+                  </a>
+         </td>
+    </tr>
+</aura:component>

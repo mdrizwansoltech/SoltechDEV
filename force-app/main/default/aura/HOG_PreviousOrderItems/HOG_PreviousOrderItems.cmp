@@ -1,0 +1,130 @@
+<aura:component controller = "Pharmacycontroller" Implements="flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    <aura:attribute name="OrderId" type="String"/>
+    <aura:attribute name="preOrderItems" type="OrderItem[]" />
+    <aura:attribute name="preOrderSupplyItems" type="OrderItem[]"/>
+   
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:attribute name="OrderItem" type="OrderItem" default="{'sobjectType':'OrderItem' }"/>
+    
+    <lightning:layout multipleRows="true">
+        <lightning:layoutItem size="6">
+            <div class="slds-text-heading_small">
+                <b>    <h4>Previous Order</h4></b> <br></br>
+            </div>
+            
+            <div class="slds-m-around-large">
+                <lightning:recordViewForm aura:id="viewForm" 
+                                          recordId="{!v.OrderId}"
+                                          objectApiName="Order">
+                    <div class="slds-truncate" title="Order Date">Order Date</div> 
+                    <lightning:outputField fieldName="Previous_Order__c" variant="label-hidden"/>
+                </lightning:recordViewForm>
+            </div><br></br>
+            
+              </lightning:layoutItem>
+    </lightning:layout>
+    <div class="slds-float_left slds-p-bottom_small">
+        <div class="slds-text-heading_small">
+            <b><h4>Pharmacy Items</h4></b> 
+        </div></div>
+         <div class="container-fluid"> 
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Product Name">Product</div> 
+                        
+                    </th>
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Dosage">Dosage</div> 
+                        
+                    </th>
+                    
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Quantity">Quantity</div>    
+                        
+                    </th>
+                </tr>
+            </thead>
+            
+          <tbody>
+                <aura:iteration items="{!v.preOrderItems}" var="orderproditem"> 
+                   
+                    <tr>
+                        <td>
+                            {!orderproditem.Product2.Name}
+                        </td>
+                        
+                        <td>
+                            {!orderproditem.Dosing__c} 
+                        </td>
+                        <td>
+                            {!orderproditem.Quantity}
+                        </td>
+                        
+                    </tr>
+                </aura:iteration>
+                
+            </tbody>
+            
+        </table>
+    </div>
+    <!-- Supply Items Code Starts Here -->
+    <div class="slds-text-heading_small">
+        <b>    <h4>Supply Items</h4></b> <br></br>
+    </div>
+    
+   <div class="container-fluid"> 
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Product Name">Category</div> 
+                        
+                    </th>
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Dosage">Product</div> 
+                        
+                    </th>
+                    
+                    <th scope="col">
+                        
+                        <div class="slds-truncate" title="Quantity">Quantity</div>    
+                        
+                    </th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <aura:iteration items="{!v.preOrderSupplyItems}" var="orderproditemsupply"> 
+                    
+                    
+                  
+                    <tr>
+                        <td>
+                            
+                            {!orderproditemsupply.Category__c}
+                            
+                        </td>
+                        
+                      <td>
+                            {!orderproditemsupply.Product2.Name}  
+                        </td>
+                        <td>
+                            {!orderproditemsupply.Quantity}   
+                        </td> 
+                    </tr>
+                    
+                </aura:iteration>
+            </tbody> 
+            
+        </table>
+    </div> 
+   
+</aura:component>

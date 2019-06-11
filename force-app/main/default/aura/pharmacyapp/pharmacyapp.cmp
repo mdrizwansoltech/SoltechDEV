@@ -1,0 +1,140 @@
+<aura:component controller="Pharmacycontroller" implements="flexipage:availableForAllPageTypes,lightning:actionOverride,flexipage:availableForRecordHome,force:hasRecordId" access="global">
+	<!-- Invoking standard SLDS
+    <ltng:require styles="{!$Resource.SLDS283}"/>-->
+    <!-- attributes -->
+    <aura:attribute name="currentOrderstep" type="string" default="Select Client"/>
+    <aura:attribute name="currentStep" type="string" default="1"/>
+    <aura:attribute name="steps" type="List"/>
+    <aura:attribute name="recordId" type="string"/>
+    <aura:attribute name="order" type="Order" description="The order object from the "/>
+    <aura:attribute name="loadorderrecordError" type="String"/>
+    <aura:attribute name="component1" type="boolean" default="false"/>
+    <aura:attribute name="opensecond" type="boolean" default="false"/>
+    <aura:attribute name="component2" type="boolean" default="false"/>
+    <!--handlers-->
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}"/>
+    <aura:handler name="ordercreated" event="c:ordercreated" action="{!c.ordercreated}"/>
+    <aura:handler name="HOG_GetOrderStep" event="c:HOG_GetOrderStep" action="{!c.HOG_GetOrderStep}"/>
+   <!-- it is not required -->
+    <force:recordData aura:id="recordLoader"
+                      layoutType="FULL"
+                      recordId="{!v.recordId}"
+                      targetError="{!v.loadorderrecordError}"
+                      targetFields ="{!v.order}"
+                      mode="VIEW"/>
+    
+     <!--Kanban view creation on order steps field-->
+    <lightning:layout>
+        <lightning:layoutItem size="12" padding="around-small" class="HOG_Progressbar">
+            <lightning:progressIndicator currentStep="{!v.currentOrderstep}" type="path" variant="base">
+                <aura:iteration items="{!v.steps}" var="step">
+                    <lightning:progressStep label="{!step}" value="{!step}"/>
+                </aura:iteration>
+            </lightning:progressIndicator>
+        </lightning:layoutItem>
+    </lightning:layout>
+    
+    <aura:if isTrue="{!v.currentOrderstep =='Select Client'}">
+        
+        <c:HOG_Selectclientcomponent aura:id="selectcomp" recordId="{!v.order.Id}" order="{!v.order}" />
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.currentOrderstep =='Contact Info'}">
+        
+        <c:HOG_ShippingInformation aura:id="ShippingInformation" orderId="{!v.recordId}"  />
+        
+    </aura:if>
+    
+    <aura:if isTrue="{!v.currentOrderstep =='Update Insurance'}">
+        
+        <c:HOG_UpdateInsurance aura:id="UpdateInsurance" orderId="{!v.recordId}" order="{!v.order}" />
+        
+    </aura:if>
+    <aura:if isTrue="{!v.currentOrderstep =='Add Order Items'}">
+        
+        <c:HOG_OrderItemPage1 aura:id="AddOrderItems" recordId="{!v.recordId}" OrderId="{!v.recordId}" Order="{!v.order}" />
+        
+    </aura:if>
+    <aura:if isTrue="{!v.currentOrderstep  =='Order Instructions'}">
+        
+        <c:HOG_OrderInstructions aura:id="OrderInstructions" OrderId="{!v.recordId}" Order="{!v.order}" recordId="{!v.recordId}"/>
+        
+    </aura:if>
+    <aura:if isTrue="{!v.currentOrderstep  =='Order Review'}">
+        
+        <c:HOG_OrderRequest aura:id="OrderReview" recordId="{!v.recordId}" order="{!v.order}" orderId="{!v.recordId}" />
+        
+    </aura:if>
+    <aura:if isTrue="{!v.currentOrderstep  =='Pharmacy Working'}">
+        
+        <c:HOG_PharmacyWorking aura:id="PharmacyWorking" OrderId="{!v.recordId}" Order="{!v.Order}" recordId="{!v.recordId}"/>
+        
+    </aura:if>
+    
+    <lightning:layout>
+        
+      
+        <aura:if isTrue="{!v.currentOrderstep =='Select Client'}">
+            <lightning:layoutItem size="10" class="HOG_ButtonLayout" >
+ 
+            <lightning:button  class="slds-float_right HOG_search_buttonstyle " variant="brand" label="Start Order" onclick="{!c.next}"/>
+            
+            
+        </lightning:layoutItem>
+          </aura:if>
+        
+ 
+        
+           <aura:if isTrue="{!v.currentOrderstep =='Contact Info'}">
+           <lightning:layoutItem size="10" class="slds-align_absolute-center ">
+           
+                <lightning:button class="slds-float_left HOG_buttonstyle" aura:id="btn" variant="brand" label="Back" onclick="{!c.back1}" />
+           <lightning:button class=" slds-float_right HOG_buttonstyle HOG_Nextbut"  variant="brand" label="Next" onclick="{!c.next1}"/>
+              
+           </lightning:layoutItem>
+       </aura:if>
+        
+        
+        
+       <aura:if isTrue="{!v.currentOrderstep =='Update Insurance'}">
+            <lightning:layoutItem size="10" class="slds-align_absolute-center ">
+           
+           <lightning:button class="slds-float_left HOG_Insurance_buttonstyle"  aura:id="btn" variant="brand" label="Back" onclick="{!c.back2}" />
+           <lightning:button class="slds-float_right HOG_Insurance_buttonstyle HOG_Nextbut" variant="brand" label="Next" onclick="{!c.next2}"/>
+              
+           </lightning:layoutItem>
+       </aura:if>
+        <aura:if isTrue="{!v.currentOrderstep =='Add Order Items'}">
+               <lightning:layoutItem size="12" class="slds-align_absolute-center HOG_OrderInsLayout">
+           <lightning:button class="slds-float_left" aura:id="btn" variant="brand" label="Back" onclick="{!c.back3}" />
+           <lightning:button class="slds-float_right HOG_Nextbut" variant="brand" label="Next" onclick="{!c.next3}"/>
+               
+            </lightning:layoutItem>
+       </aura:if>
+        <aura:if isTrue="{!v.currentOrderstep =='Order Instructions'}">
+                 <lightning:layoutItem size="10" class="slds-align_absolute-center ">
+            <lightning:button class="slds-float_left  HOG_OrderIns_buttonstyle" aura:id="btn" variant="brand" label="Back" onclick="{!c.back4}" />
+           <lightning:button  class="slds-float_right HOG_OrderIns_buttonstyle HOG_Nextbut" variant="brand" label="Next" onclick="{!c.next4}"/>
+              
+            </lightning:layoutItem>
+       </aura:if>
+        <aura:if isTrue="{!v.currentOrderstep  =='Order Review'}">
+               <lightning:layoutItem size="10" class="slds-align_absolute-center ">
+       <!-- <lightning:button class="slds-float_left" aura:id="btn" variant="brand" label="Back" onclick="{!c.back5}" />
+           <lightning:button class="slds-float_right" variant="brand" label="Next" onclick="{!c.next5}"/> -->
+               
+            </lightning:layoutItem>
+    </aura:if>
+    <aura:if isTrue="{!v.currentOrderstep  =='Pharmacy Working'}">
+        <lightning:layoutItem size="12" >
+            <div class="slds-clearfix ">
+           <lightning:button class="slds-float_left" aura:id="btn" variant="brand" label="Back" onclick="{!c.back6}" />
+           <lightning:button class="slds-float_right" variant="brand" label="Next" onclick="{!c.next6}"/>
+            </div>
+        </lightning:layoutItem>
+        <br/><br/><br/>
+    </aura:if>
+    </lightning:layout>
+    <br/><br/><br/>
+</aura:component>

@@ -1,0 +1,62 @@
+.THIS {
+}
+
+.THIS .HOG_customlab,.THIS .HOG_customlab1 {    display: inline-flex;    margin-left: 0.5rem;width:100%;
+
+}
+
+.THIS .HOG_customlab .slds-form-element__control{   margin-left: 0.5rem;}
+.THIS .HOG_OrderIns{  margin-left: 1rem;}
+.THIS .HOG_Shiptitle{
+        font-size: 22px;
+    font-weight: bold;
+        margin-left: 0.5rem;
+
+}
+.THIS .HOG_customlab>lightning-input>label{
+    font-size:13px;}
+.THIS .HOG_LayoutBorder{
+        background-color:white !important;
+  /*  border-top-left-radius:0px;
+     border-top-right-radius:0px;
+      border-bottom-left-radius:9px;
+     border-bottom-right-radius:9px;*/
+    MARGIN-TOP:1REM;
+    border-radius:9px;
+   
+    padding-bottom:5rem;
+    padding-top: 0.25rem;
+
+
+}
+
+.THIS .HOG_Datasec{margin-left: 3rem;
+   margin-left: 3rem;
+    border: 1PX SOLID #c8bebe;
+    padding: .5REM;
+    border-radius: 4PX;
+    background: #f9f9f9;
+      height:150px;
+      width : 400px;
+    padding-bottom: 1rem;
+    margin-top: 0.75rem;
+
+
+}
+.THIS .HOG_Value{margin-left:5px;}
+
+.THIS .HOG_Prevdata{    margin-left: 0.5rem;
+    font-weight: bold;
+    font-size: 13px;}
+
+.THIS .HOG_customlab >span{
+        font-size: 13px;
+    margin-top: -2px;
+    color: black;
+    font-weight: bold;width:99px;}
+.THIS .HOG_customlab1 >span{    font-size: 13px;
+    margin-top: -2px;
+    color: black;
+    font-weight: bold;width:148px;}
+.THIS .HOG_customlab svg{    margin-top: -3px;
+}

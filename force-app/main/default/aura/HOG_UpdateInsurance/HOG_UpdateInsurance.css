@@ -1,0 +1,73 @@
+.THIS .input_label{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:1rem;
+}
+.THIS .HOG_Newbutton{
+    float: right;
+    margin-right: 9px;
+    margin-top: 3px;
+    
+}
+.THIS .HOG_Textareastyle{
+    margin: 0 12px 12px 12px;
+
+}
+.THIS .HOG_Alertslabel{font-size:13px;color:black;margin-left:0.75rem;    margin-top: 0.5rem;
+}
+.THIS .HOG_customlab {    display: inline-flex;    margin-left: 0.5rem;    width: 100%;
+
+
+}
+
+.THIS .HOG_customlab >span{
+        font-size: 13px;
+    margin-top: -2px;
+    color: black;
+    font-weight: bold;    width: 99px;
+}
+
+
+.THIS .HOG_customlab lightning-formatted-lookup> a{display: inline;
+    /* border: 1px solid red; */
+    font-size: 13px;
+   
+    vertical-align: middle;} 
+
+
+
+.THIS .HOG_Labelstyle{
+    font-size:18px;   margin-left: 0.5rem;
+    
+}
+.THIS .HOG_Secwidth{
+width: 48%;
+   
+} 
+.THIS .HOG_HeaderStyle{    padding:0.5rem;background-color:grey;
+}
+.THIS .HOG_HeaderStyle>div{color:white !important;}
+.THIS .HOG_Checkstyle .slds-form-element__control{margin-top:20px;    margin-bottom: 11px;
+}
+
+.THIS .HOG_LayoutBorder{
+        background-color:white !important;
+  /*  border-top-left-radius:0px;
+     border-top-right-radius:0px;
+      border-bottom-left-radius:9px;
+     border-bottom-right-radius:9px;*/
+    MARGIN-TOP:1REM;
+    border-radius:9px;
+   
+    padding-bottom:5rem;
+    padding-top: 0.25rem;
+
+
+}
+
+.THIS .HOG_Shiptitle{
+        font-size: 22px;
+    font-weight: bold;
+        margin-left: 0.5rem;
+
+}

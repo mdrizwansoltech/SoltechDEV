@@ -1,0 +1,139 @@
+<aura:component controller = "Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<!-- Aura Attribute for store single OrderItem[standard Object] Instance
+         And Store Index of Particular Instance -->
+    <aura:attribute name="OrderItemInstance" type="OrderItem" default="{'sobjectType':'OrderItem'}"/>
+    <aura:attribute name="PrescriptionInstance" type="Prescription__c" default="{'sobjectType':'Prescription__c'}"/>
+    
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="objInfo" type="OrderItem" default="{sobjectType : 'OrderItem'}" />
+     <aura:attribute name="OrderInstance" type="Order" default="{sobjectType : 'Order'}" />
+    <aura:attribute name="orderId" type="string"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="HOG_RXDeleteRowEvt" type="c:HOG_RXDeleteRowEvt"/> 
+    <aura:handler event="c:HOG_ProductInsuranceCreationEvent" action="{!c.saveOrderprodList}"/>
+    <!--  <aura:handler event="c:HOG_ProductInsuranceRecordEvent"  action="{!c.saveOrderprodList}"/> -->
+    
+    <aura:handler event="c:HOG_RefreshChildComponentEvent"  action="{!c.doInit}"/>
+    <aura:handler name="HOG_ProductInsuranceRecordRowEvent"  event="c:HOG_ProductInsuranceRecordRowEvent" action="{!c.removeInsuranceRow}"/>
+    <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt"/>
+    <aura:attribute name="statusValue" type="Boolean"/>
+     <aura:attribute name="InsurancestatusValue" type="Boolean"/>
+    
+    <aura:attribute name="InsuranceRecords" type="List"/>
+     <aura:attribute name="ShowInsurance" type="Boolean" default="false"/>
+     <aura:attribute name="ClientChatId" type="String"/> 
+      <aura:attribute name="RXNumber" type="String"/>
+    <aura:attribute name="RXNumberList" type="list"/>
+    <!-- Table Row -->   
+    <tr class="slds-text-title_caps">
+        <td> 
+            {!v.rowIndex + 1}
+        </td>
+     <td>
+             <ui:inputSelect  aura:id="Products" class="slds-select" 
+                             value="{!v.OrderItemInstance.ProductCode__c}" change="{!c.SelectProduct}" /> 
+         </td>
+         <aura:if isTrue="{!v.statusValue}">
+         <td>
+             <lightning:input name="QuantityOnHand" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Dosage__c}" />
+             
+           </td>
+        </aura:if>
+        <td>
+            <ui:outputText value="{!v.OrderItemInstance.Previous_Quantity__c}"/>
+        </td>
+        
+        <td>
+           <lightning:input name="QuantityOnHand" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Quantity_On_Hand__c}" /> 
+        </td>
+        <td>
+          <lightning:input name="QuantityNeeded" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Quantity_Needed__c}" /> 
+        </td>
+         
+        <aura:if isTrue="{!v.InsurancestatusValue}">
+         <td>
+           <ui:outputText aura:id="priorAuthID" value="{!v.OrderItemInstance.Prior_Authorization1__c}"/>
+        </td>
+        </aura:if>
+        <aura:if isTrue="{!v.statusValue}">
+         <td>
+             <ui:inputSelect  aura:id="RxNumbers" class="slds-select" 
+                             value="{!v.OrderItemInstance.RX_Number__c}" /> 
+         </td>
+       <!--  <td>
+          <lightning:input name="PANumber" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Quantity_Needed__c}" /> 
+        </td>
+        <td>
+             <ui:inputSelect  aura:id="Insurance" class="slds-select" 
+                             value="{!v.OrderItemInstance.Insurance__c}" />
+           </td> -->
+        </aura:if>
+        <td>
+                  <a onclick="{!c.removeRow}">
+                   <lightning:icon variant="error" iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                   <span class="slds-assistive-text">Delete Icon</span>
+                  </a>
+         </td>
+        
+        <td>
+                   <aura:if isTrue="{!v.OrderInstance.Status=='Insurance Verify'}">
+                  <a onclick="{!c.AddInsurance}" title="Add New Insurance">
+                   <lightning:icon variant="error" iconName="utility:add" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                   <span class="slds-assistive-text">Delete Icon</span>
+                  </a>
+            </aura:if>
+         </td>
+         </tr>
+         <aura:if isTrue="{!v.ShowInsurance}">
+        <lightning:accordion activeSectionName="InsuranceSections">
+            
+            
+                                <span> 
+                                   
+                                    <lightning:button variant="brand" label="Add New Insurance" title="Brand action" onclick="{!c.AddRowForInsurance}"  class="HOG_Newbutton"/> 
+                                </span>
+                          
+            
+                
+                   <div class="container-fluid">        
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                      
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate " title="Insurance">#</div> 
+                                            
+                                        </th>
+
+                                       <th scope="col">
+                                                <div class="slds-truncate" title="Insurance">Insurance</div>
+                                            </th>   
+                                        
+                                         <th scope="col">
+                                                <div class="slds-truncate" title="PANumber">PA Number</div>
+                                            </th>
+                                            
+                                           
+                                       
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                      <aura:iteration items="{!v.InsuranceRecords}" var="InsuranceRec" indexVar="index">
+                                        <c:HOG_ProductInsurance ProductInsuranceRecord="{!InsuranceRec}" rowIndexVal="{!index}" OrderItemRecordId="{!v.OrderItemInstance.Id}" orderId="{!v.orderId}" />
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+          
+        </lightning:accordion>    
+        </aura:if>
+       
+   
+    
+</aura:component>

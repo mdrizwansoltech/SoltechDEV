@@ -1,0 +1,643 @@
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+
+	<!--Created orderId attribute to store orderid-->
+    <aura:attribute name="OrderId" type="string"/>
+    <aura:attribute name="recordId" type="String"/>
+    <!--created attribute to store order information-->
+    <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+    
+    <aura:method name="PassingtoOrderInstructions" action="{!c.PassingtoOrderInstructions}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+     <aura:method name="backtoOrderReview" action="{!c.backtoOrderReview}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+    
+       <!--Created orderId attribute to store orderid-->
+   <!-- <aura:attribute name="orderId" type="string"/>  -->
+    <!--created attribute to store order information-->
+   <!-- <aura:attribute name="Order" type="Order" description="The order object from the "/> -->
+    
+    <aura:attribute type="String" name="selectedCheckBoxes" />
+    
+     <!--Aura Attribute for store OrderItem Object List as Array-->    
+    <aura:attribute name="RXOrderItemList" type="OrderItem[]"/> 
+    <aura:attribute name="SupplyOrderItemList" type="OrderItem[]"/> 
+    
+     <!--Event handler for Add and Delete Supply Row Event which is fire from Child Component-->    
+    <aura:handler name="HOG_SupplyDeleteRowEvt" event="c:HOG_SupplyDeleteRowEvt" action="{!c.removeDeletedSupplyRow}"/>
+    <aura:handler name="AddSupplyRowEvt" event="c:AddNewRowEvt" action="{!c.addNewSupplyRow}"/>
+    
+    <!--Event handler for Add and Delete RX Row Event which is fire from Child Component-->    
+    <aura:handler name="HOG_RXDeleteRowEvt" event="c:HOG_RXDeleteRowEvt" action="{!c.removeDeletedRXRow}"/>
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}"/>
+    
+    <aura:attribute type="ID" name="listViewId" />
+    <aura:attribute type="String" name="listViewName" />
+     <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:attribute name="display" type="boolean" default="false"/>
+    <aura:attribute name="PrescriptionItemList" type="OrderItem[]"/>
+     <aura:attribute name="PrescriptionProfileItemList" type="OrderItem[]"/>
+    
+    <aura:attribute name="isPHPOpen" type="boolean" default="false"/>
+     <aura:attribute name="isManuallySectionOpen" type="boolean" default="false"/>
+     <aura:attribute name="PHPTypes" type="String[]" default="PHP,NON-PHP"/>
+    
+    
+    
+     <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                  border-top-right-radius: 9px;    padding: 0.25rem;
+                                  margin-top: 1rem;">
+         
+         
+        <div>
+            <span>  <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Pharmacy Order Review Page</label>
+                
+            </span>
+        </div>
+        
+        <div class="slds-col_bump-left">
+            <span>
+                <lightning:button variant="brand" label="Order Queue" title="Brand action" onclick="{!c.navigateToOrderview}"  class="HOG_Newbutton"/> 
+                <lightning:button variant="brand" label="Add Profile" title="Brand action" onclick="{!c.addProfileMethod}"  class="HOG_Newbutton"/> 
+                 <lightning:button variant="brand" label="Manual Selection" title="Brand action" onclick="{!c.OpenPHPVarification}"  class="HOG_Newbutton"/>
+                    <lightning:button variant="brand" label="Auto Selection" title="Brand action" onclick="{!c.OpenPHPVarification}"  class="HOG_Newbutton"/>  
+               
+            </span>
+              <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+                <aura:if isTrue="{!v.isOpen}">
+                    
+                    <!--###### MODAL BOX Start######--> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container " >
+                            <!-- ###### MODAL BOX HEADER Start ######-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeModel }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Profile</h2>
+                            </header>
+                            <!--###### MODAL BOX BODY Part Start######-->
+                              <div class="slds-modal__content slds-p-left_large slds-p-right_Large" >
+                             <div class="container-fluid">        
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                         <th scope="col">
+                                            <div class="slds-truncate">Select</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate " title="Rx Key">Rx Key</div> 
+                                            
+                                        </th>
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate" title="Name">Name</div> 
+                                            
+                                        </th>
+                                     <!--   <th scope="col">
+                                            
+                                            <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                                            
+                                        </th>-->
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Target">Target</div>    
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="High">High</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Low">Low</div>
+                                        </th>
+    							   </tr>
+                                </thead>
+                            <tbody>
+                                 <aura:iteration items="{!v.PrescriptionItemList}" var="item" indexVar="index">
+                                <tr class="slds-text-title_caps">
+       
+          <td> 
+            <ui:inputCheckbox aura:id="checkbox" text="{!item.Id}" change="{!c.onSelectCheckbox}"/>
+        </td>
+        <td>
+             <ui:outputText class="HOG_CustomInput" value="{!item.Prescription_Profile__r.RXKEY__c}" /> 
+                            
+        </td>
+        <td>
+             <ui:outputText class="HOG_CustomInput" value="{!item.Product2.Name}" />
+         </td>
+      <!-- <td>
+             <ui:outputText class="HOG_CustomInput" value="{!item.Previous_Quantity__c}" />
+         </td>-->
+        <td>
+            <ui:outputText class="HOG_CustomInput" value="{!item.Prescription_Profile__r.Target__c}" />
+        </td>
+        <td>
+           <ui:outputText class="HOG_CustomInput" value="{!item.Prescription_Profile__r.High__c}"  />
+        </td>
+        <td>
+          <ui:outputText class="HOG_CustomInput" value="{!item.Prescription_Profile__r.Low__c}" />
+        </td>
+        
+                                </tr>
+                                </aura:iteration>
+                            </tbody>
+                            
+                                 </table>
+                            </div>
+                            </div>
+                            <footer class="slds-modal__footer">
+                              	 <lightning:button type="submit" label="Select" variant="brand" onclick="{!c.SelectedProfiles}"/>
+
+                                   </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <!--###### MODAL BOX Part END Here ######-->
+                    
+                </aura:if>
+        </div>
+    </div>
+	
+    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+        <div class="slds-large-size--2-of-12  slds-p-bottom_x-small slds-p-left_small slds-float_left"> 
+            <lightning:layoutItem flexibility="auto"  padding="around-small" class="slds-box">
+                <lightning:recordEditForm aura:id="recordViewForm"                                     
+                                          objectApiName="Order" recordId="8010j0000003tIcAAI">
+                    <lightning:messages />
+                    <lightning:inputField fieldName="Pharmacy__c" />
+                    <lightning:inputField fieldName="Status" aura:id="statuschange" onchange="{!c.onchangestatus}"/>
+                    <lightning:outputField aura:id = "ClientNameID" fieldName="Client_Name_C__c" />
+                    <lightning:outputField fieldName="Medical_Disorder__c" />
+                    <lightning:outputField fieldName="Severity__c" />
+                 <!--   <lightning:outputField fieldName="Dosage_Range_From__c" />
+                    <lightning:outputField fieldName="Dosage_To__c" />-->
+                    <lightning:inputField fieldName="EffectiveDate" />
+                    <lightning:inputField fieldName="Deliver_By_Date__c" />
+                    <!-- <lightning:outputField fieldName="Placed_By__c" />-->
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Placed_By__c" aura:id = "PlacedBy"/>
+                    </lightning:layoutItem>
+                    
+                    
+                    <!--    <lightning:outputField fieldName="RPH_Consult__c" />-->
+                    <lightning:layoutItem size="12">
+                        
+                        <lightning:inputField aura:id = "Rhpconsultant" fieldName="RPH_Consult__c" value="{!v.Order.RPH_Consult__c}" />
+                        
+                    </lightning:layoutItem>
+                    
+                    <!--  <lightning:outputField fieldName="Ship_To_Name__c" />-->
+                    <lightning:layoutItem size="12">
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Ship_To_Name__c" aura:id = "ShipToName" /> 
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Street_Name__c" aura:id = "StreetName"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Address_Line_2__c" aura:id = "AddressLine2"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="City__c" aura:id = "City"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="State__c" aura:id = "State" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Zip_Code__c" aura:id = "ZipCode" />
+                    </lightning:layoutItem>
+                    <lightning:inputField fieldName="Ship_Via__c" />
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField  aura:id = "Signaturerequired" fieldName="Signature__c"  />
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Order_Notes__c" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Phone__c" aura:id = "Phone"/>
+                    </lightning:layoutItem>
+                    <!--Picklist-->
+                    <lightning:outputField fieldName="Level__c" />
+                    <lightning:button aura:id="submit" type="submit" label="Save" class="slds-m-top_medium" />
+                    
+                </lightning:recordEditForm>
+                
+                
+            </lightning:layoutItem>
+            <br></br>
+              <lightning:layoutItem   class="slds-box" >
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    
+                    <h1>Print</h1>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Order Detail" 
+                                     value="Order Detail"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Dose Sheet" 
+                                     value="Dose Sheet"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Drug Notes" 
+                                     value="Drug Notes"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Labels" 
+                                     value="Labels"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Packing List'" 
+                                     value="Packing List"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="PickList" 
+                                     value="PickList"/>
+                    <lightning:input  aura:id="chk1" name="myCheckboxes" type="checkbox" label="Pharmacy Order Form" 
+                                     value="Pharmacy Order Form"/>
+                    <br></br>
+                    <div>
+                        <lightning:button label="Print" iconName="utility:print" onclick="{!c.print}" value="print" />
+                        
+                    </div>
+                </div>
+                
+              
+            </div>
+            </lightning:layoutItem>
+        </div>
+        <div class="slds-large-size--10-of-12  slds-p-bottom_x-small slds-p-left_small slds-float_right"> 
+            <lightning:layoutItem flexibility="auto" padding="around-small"  >
+                
+                <lightning:layoutItem   class="slds-box" >
+                        <aura:if isTrue="{!v.display}">
+        				<c:HOG_ProfileItemList  Prescrptnprofilelst ="{!v.PrescriptionProfileItemList}"/>
+    						</aura:if>
+                     <!-- Table Row --> 
+                    <div class="slds-m-around--x-large">
+                            <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                                      border-top-right-radius: 9px;    padding: 0.25rem;
+                                                      margin-top: 1rem;">
+                                
+                            <div>
+                             <span>  
+                                 <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Pharmacy Items</label>
+                             </span>
+                            </div>
+                       
+                            
+                            <div class="slds-col_bump-left">
+                                <span> 
+                                    <lightning:button variant="brand" label="Add New Row" title="Brand action" onclick="{!c.RXaddRow}"  class="HOG_Newbutton"/> 
+                                </span>
+                            </div>
+                            
+                        </div> 
+                        <div class="container-fluid">        
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate">#</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate " title="Product Name">Product</div> 
+                                            
+                                        </th>
+                                        <aura:if isTrue="{!v.statusValue}">
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate" title="Product Name">Dosage</div> 
+                                            
+                                        </th>
+                                        </aura:if>
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                                            
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Available Quantity">Quantity On Hand</div>    
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Quantity Needed">Quantity Needed</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Rx Number">Rx Number</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="PANumber">PANumber</div>
+                                        </th>
+                                       
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Insurance">Insurance</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Action">Action</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.RXOrderItemList}" var="orderprod" indexVar="index">
+                                       <c:HOG_RXProductRowRequest OrderItemInstance="{!orderprod}" rowIndex="{!index}"/>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        
+                    </div>
+                    <!-- Supply Item Code -->
+                   
+                    <!-- Supply product Header and Buttons --> 
+        <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                      border-top-right-radius: 9px;    padding: 0.25rem;    margin-top: 1rem;
+                                      ">
+            <div>
+                <span>  <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Supply Items</label>
+                    
+                </span>
+            </div>
+            
+            <div class="slds-col_bump-left">
+                <span> 
+                    <lightning:button variant="brand" label="Add New Row" title="Brand action" onclick="{!c.supplyaddRow}"  class="HOG_Newbutton"/>       
+                </span>
+            </div>
+            
+        </div> 
+        <!-- Ends Here -->
+        <!--Table Part-->           
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+            <thead>
+                <tr >
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate">#</div>
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Category">Category</div> 
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Product Name">Product</div> 
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Quantity Needed">Quantity Needed</div>    
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Quantity In Stock">Quantity In Stock</div>    
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate" title="Action">Action</div>
+                    </th>
+                </tr>
+            </thead>   
+            <tbody>
+                
+                <aura:iteration items="{!v.SupplyOrderItemList}" var="item" indexVar="index">
+                    <c:HOG_SupplyProductRowItem OrderItemInstance="{!item}" rowIndex="{!index}" />
+                </aura:iteration>
+            </tbody>
+        </table>
+        <br/>
+                    <!--******ENDS Here***************-->
+                    
+                </lightning:layoutItem>
+                 <lightning:layoutItem  class="slds-box">
+                    <lightning:recordEditForm aura:id="recordViewForm"                                     
+                                              objectApiName="Order" >
+                        <lightning:messages />
+                        <!--   <lightning:InputField fieldName="Instructions__c" />-->
+                        
+                        <div class="slds-grid slds-wrap  HOG_LayoutBorder">
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_6-of-12 HOG_OrderIns" >
+                                
+                                <span> 
+                                    <lightning:inputField aura:id = "Instructions"  fieldName="Instructions__c" value="{!v.Order.Instructions__c}" />
+                                </span>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                    </lightning:recordEditForm>
+                </lightning:layoutItem>
+                <div class="slds-m-around--xx-large">
+                    <div class="slds-float_left slds-p-bottom_small">
+                        <div class="slds-text-heading_small">
+                            <!--  <b><h4>Insurance</h4></b> -->
+                            
+                        </div> 
+                        
+                    </div>
+                    
+                    <lightning:layoutItem class="slds-box">
+                        
+                        <!--  <lightning:button variant="brand" label="New" title="New" onclick="{! c.newInsuranceForm}"   />-->
+                        <lightning:recordEditForm recordId="{!v.order.Id}" objectApiName="Order">
+                            <lightning:messages />
+                            <!-- <lightning:outputField fieldName="Client_Name_C__c" />-->
+                        </lightning:recordEditForm>
+                        
+                        
+                        
+                        
+                        <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                                      border-top-right-radius: 9px;">
+                            <div>
+                                <span>  <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Insurance</label>
+                                    
+                                </span>
+                            </div>
+                            
+                            <div class="slds-col_bump-left">
+                                <span>  <lightning:button variant="brand" label="New" title="New" onclick="{! c.newInsuranceForm}"  class="HOG_Newbutton" />
+                                </span>
+                            </div>
+                        </div>           
+                        <!--   <ui:button aura:id="button" label="New" press="{!c.newInsuranceForm}"/> -->   
+                        
+                        
+                        
+                        
+                        <div class= "slds-grid slds-wrap custwrap"  style="background:white;">
+                            
+                            <!-- Displaying Insurance records in the form of table-->
+                            <table align="Center" class="slds-table slds-table_bordered slds-table_striped slds-table_resizable-cols slds-border_left slds-border_right" >
+                                
+                                <thead>
+                                    
+                                    <tr class="slds-line-height_reset  ">
+                                        
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Policy #"> Policy #</div>
+                                            
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="order"> Order </div>
+                                            
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Category ">Category</div>
+                                            
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Provider"> Provider </div>
+                                            
+                                        </th>
+                                        
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Name</div>
+                                            
+                                        </th>
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Type</div>
+                                        </th>
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Plan Name">Effective Date</div>
+                                        </th>
+                                        <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                            <div class="slds-truncate slds-is-sortable" title="Plan Name">Termination Date</div>
+                                        </th>
+                                        
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.ListOfRecords}" var="Record"> 
+                                        
+                                        <tr>
+                                            
+                                            <th scope="row">
+                                                <a href="javascript:void(0);" data-IncId="{!Record.Id}" onclick="{!c.OpenEditModel}"  data-aura-class="forceActionLink" >
+                                                    <div class="slds-truncate" title="{!Record.Policy_Number__c}">{!Record.Policy_Number__c}</div>
+                                                </a>     
+                                            </th>
+                                            
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Coverage_Order__c}">{!Record.Coverage_Order__c}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Category__c}">{!Record.Category__c}</div>
+                                            </th>
+                                            
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Insurance_Provider_Name__c}">{!Record.Insurance_Provider_Name__c}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Plan_Name__c}">{!Record.Plan_Name__c}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Plan_Type__c}">{!Record.Plan_Type__c}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Effective_Date__c}">{!Record.Effective_Date__c}</div>
+                                            </th>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title="{!Record.Termination_Date__c }">{!Record.Termination_Date__c }</div>
+                                            </th>
+                                            
+                                        </tr>
+                                        
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </lightning:layoutItem>
+                </div>
+            </lightning:layoutItem>
+        </div>
+    </lightning:layout>
+    
+     <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+                <aura:if isTrue="{!v.isPHPOpen}">
+                    
+                    <!--###### MODAL BOX Start######--> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container " >
+                            <!-- ###### MODAL BOX HEADER Start ######-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.CancelPHPVarification }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+
+                            </header>
+                            <!--###### MODAL BOX BODY Part Start######-->
+                              <div class="slds-modal__content slds-p-left_large slds-p-right_Large" >
+                                   <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> Which type of inventory do you want to use? </h2>
+                                  <h3>  Order is NOT PHS eligible </h3>
+                             <div class="container-fluid">   
+                                 
+                                
+                         <!--   <ui:inputSelect aura:id="costcodes" label="Cost Code">
+                                <aura:iteration items="{!v.PHPTypes}" var="type">
+                                     <ui:inputSelectOption text="{!type}" label="{!type}"/>
+                                </aura:iteration>
+                            </ui:inputSelect> -->
+                                                         
+                               <ui:inputSelect label="Cost Code" class="dynamic" aura:id="InputSelectDynamic"/>
+                                  <ui:inputTextArea aura:id="Reason" label="Override Reason"  rows="10"/>
+                             
+                    
+                            </div>
+                            </div>
+                            <footer class="slds-modal__footer">
+                              	 <lightning:button type="Cacel" label="Cancel" variant="brand" onclick="{!c.CancelPHPVarification}"/>
+                                 <lightning:button type="Next" label="Next" variant="brand" onclick="{!c.NextPHPVarification}"/>
+
+                                   </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <!--###### MODAL BOX Part END Here ######-->
+                    
+                </aura:if>
+        
+    
+    <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+                <aura:if isTrue="{!v.isManuallySectionOpen}">
+                    
+                    <!--###### MODAL BOX Start######--> 
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container " >
+                            <!-- ###### MODAL BOX HEADER Start ######-->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.CancelPHPVarification }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+
+                            </header>
+                            <!--###### MODAL BOX BODY Part Start######-->
+                              <div class="slds-modal__content slds-p-left_large slds-p-right_Large" >
+                                  
+                             <div class="container-fluid">   
+                                 <c:HOG_ManualSelection ProductId="01t1H000006GzjFQAS" OrderId="{!v.OrderId}"/>
+                               
+                              </div>
+                            </div>
+                          <!--  <footer class="slds-modal__footer">
+                              	 <lightning:button type="Cacel" label="Cancel" variant="brand" onclick="{!c.CancelPHPVarification}"/>
+                                 <lightning:button type="Next" label="Add Complete Doses to Order" variant="brand" onclick="{!c.NextPHPVarification}"/>
+
+                                   </footer> -->
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <!--###### MODAL BOX Part END Here ######-->
+                    
+                </aura:if>
+    
+</aura:component>

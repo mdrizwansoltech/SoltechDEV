@@ -1,0 +1,270 @@
+<!-- ******************************************************************************************************************************
+* Copyright(C)2019
+* Soltech
+* All Rights Reserved
+* Name      : HOG_Selectclientcomponent.cmp
+* Purpose   : This component is used  to display the insurance record based on the client and create&update insurance 
+
+**********************************************************************************************************************************
+*   Version No                   Name                           Date                                Description
+
+* ================================================================================================================================
+*        1.0                   Rizwan Mohammed                     04/05/2019                        Initial Version
+       
+*********************************************************************************************************************************** -->
+
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+    <!--Created ListOfRecords attribute to store insurance record-->
+    <aura:attribute name="ListOfRecords" type="List"/>
+    <!--Created alertMessage attribute to store alert message enter by the user--> 
+    <aura:attribute name="alertMessage" type="string"/>
+    <!--Created ClientName attribute to display client on the page-->
+    <aura:attribute name="ClientName" type="string"/>
+    <!--Created orderId attribute to store orderid-->
+    <aura:attribute name="orderId" type="string"/>
+    <aura:attribute name="InsuranceRecordId" type="string"/>
+    <!--Created selectedClientId attribute to store selectedClientId-->
+    <aura:attribute name="selectedClientId" type="string"/>
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <!--created attribute to store order information-->
+    <aura:attribute name="order" type="Order" description="The order object from the "/>
+    <aura:attribute name="orderupdate" type="Order" default="{'sObjectType':'Order' }"/>
+    <!--use boolean attribute for Store true/false value,
+    make default to "false" so modal box are not display on the load of component. 
+    --> 
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:showToast" action="{!c.handleToastEvent}"/>
+    
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+    
+    
+    <aura:method name="Passingtoaddorderitems" action="{!c.Passingtoaddorderitems}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    <aura:method name="backtoShippingInformation" action="{!c.backtoShippingInformation}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    <div class="slds-grid slds-wrap slds-align_absolute-center HOG_LayoutBorder" style="    background: white;
+                                                                                        border-radius: 9px;
+                                                                                        margin-top: 1rem;
+                                                                                        margin-bottom: 1rem;
+                                                                                        }">
+        
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_12-of-12">
+            
+            
+            
+            <span class="slds-form-element__label HOG_Shiptitle">Update Insurance</span>
+            
+            
+            
+            <lightning:recordEditForm recordId="{!v.order.Id}" objectApiName="Order">
+                <lightning:messages />
+                <lightning:outputField fieldName="Client_Name_C__c" class="HOG_customlab"/>
+            </lightning:recordEditForm>
+        </div>
+        
+    </div>
+    <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                  border-top-right-radius: 9px;">
+        <div>
+            <span>  <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Insurance</label>
+                
+            </span>
+        </div>
+        
+        <div class="slds-col_bump-left">
+            <span>  <lightning:button variant="brand" label="New" title="New" onclick="{! c.newInsuranceForm}"  class="HOG_Newbutton" />
+            </span>
+        </div>
+    </div>           
+    <!--   <ui:button aura:id="button" label="New" press="{!c.newInsuranceForm}"/> -->   
+    
+    
+    
+    
+    <div class= "slds-grid slds-wrap custwrap"  style="background:white;">
+        
+        <!-- Displaying Insurance records in the form of table-->
+        <table align="Center" class="slds-table slds-table_bordered slds-table_striped slds-table_resizable-cols slds-border_left slds-border_right" >
+            
+            <thead>
+                
+                <tr class="slds-line-height_reset  ">
+                    
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Policy #"> Policy #</div>
+                        
+                    </th>
+                    
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="order"> Order </div>
+                        
+                    </th>
+                    
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Category ">Category</div>
+                        
+                    </th>
+                    
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Provider"> Provider </div>
+                        
+                    </th>
+                    
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Name</div>
+                        
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Type</div>
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Plan Name">Effective Date</div>
+                    </th>
+                    <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                        <div class="slds-truncate slds-is-sortable" title="Plan Name">Termination Date</div>
+                    </th>
+                    
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration items="{!v.ListOfRecords}" var="Record"> 
+                    
+                    <tr>
+                        
+                        <th scope="row">
+                            <a href="javascript:void(0);" data-IncId="{!Record.Id}" onclick="{!c.OpenEditModel}"  data-aura-class="forceActionLink" >
+                                <div class="slds-truncate" title="{!Record.Policy_Number__c}">{!Record.Policy_Number__c}</div>
+                            </a>     
+                        </th>
+                        
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Coverage_Order__c}">{!Record.Coverage_Order__c}</div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Category__c}">{!Record.Category__c}</div>
+                        </th>
+                        
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Insurance_Provider_Name__c}">{!Record.Insurance_Provider_Name__c}</div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Plan_Name__c}">{!Record.Plan_Name__c}</div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Plan_Type__c}">{!Record.Plan_Type__c}</div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Effective_Date__c}">{!Record.Effective_Date__c}</div>
+                        </th>
+                        <th scope="row">
+                            <div class="slds-truncate" title="{!Record.Termination_Date__c }">{!Record.Termination_Date__c }</div>
+                        </th>
+                        
+                    </tr>
+                    
+                </aura:iteration>
+            </tbody>
+        </table>
+    </div>
+    <!--<div class="slds-m-top_medium" align="right">
+        <lightning:button variant="brand" onclick="{! c.Back }" name="Back" label="Back" />
+        <lightning:button disabled="{!v.disabled}" variant="brand" onclick="{! c.Next }" name="Next" label="Next" />
+    </div>-->
+    <div class="slds-grid slds-wrap" style="    background: white;    border-bottom-left-radius: 9px;
+                                            border-bottom-right-radius: 9px;        padding-bottom: 4.5rem;
+                                            
+                                            
+                                            
+                                            ">
+        <div class="slds-form-element__label HOG_Alertslabel"> Alerts
+        </div>
+        <ui:inputTextArea aura:id="comments"  value="{!v.alertMessage}" rows="5" class="HOG_Textareastyle"/></div>
+    
+    <!--Use "slds-m-around_xx-large" class to add standard X-Large padding to the component--> 
+    <div class="slds-m-around_xx-large">
+        
+        <!--Use aura:if tag to display Model Box, on the bese of conditions. [isOpen boolean attribute] -->   
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start######--> 
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Start ######-->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Create Insurance</h2>
+                    </header>
+                    <!--###### MODAL BOX BODY Part Start######-->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <!--recordEditForm is used to display output fields and input fields based on object-->
+                        <lightning:recordEditForm aura:id="newInsuranceform" 
+                                                  objectApiName="Insurance_Coverage__c"  
+                                                  onsuccess="{!c.closeModelForInsurance}" 
+                                                  onsubmit="{!c.handleSubmit}">
+                            <!-- the messages component is for error messages -->
+                            
+                            <lightning:messages />
+                            
+                            <div class="slds-grid slds-wrap">
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 HOG_Secwidth" style="margin-right: 1.45rem;">
+                                    <span>
+                                        <lightning:inputField fieldName="Policy_Number__c"  aura:id="PolicyNumber"/>
+                                        <lightning:inputField fieldName="Termination_Date__c" aura:id="TerminationDate" />
+                                        <lightning:inputField fieldName="BIN__c" />
+                                        <lightning:inputField fieldName="Co_Pay_Amt__c" />
+                                        <lightning:inputField fieldName="Coverage_Order__c" />
+                                        <lightning:inputField fieldName="Group_Number__c" />
+                                        <lightning:inputField fieldName="InForce__c" class="HOG_Checkstyle" />
+                                        <lightning:inputField fieldName="Insured_Client__c" value="{!v.order.Client_Chart__c}"/>
+                                        <lightning:inputField fieldName="Holder_Name__c" />
+                                        <lightning:inputField fieldName="Lifetime_Maximum__c" />
+                                        <lightning:inputField fieldName="Network__c" />
+                                        <lightning:inputField fieldName="PA_Type__c" />
+                                    </span>
+                                </div>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-large-size_6-of-12 HOG_Secwidth">
+                                    <span>   
+                                        <lightning:inputField fieldName="Plan_Name__c" aura:id="PlanName"  />
+                                        <lightning:inputField fieldName="Plan_Type__c" aura:id="PlanType"  />
+                                        <lightning:inputField fieldName="Policy_Type__c" aura:id="PolicyType"  />
+                                        <lightning:inputField fieldName="Category__c" aura:id="Category" />
+                                        <lightning:inputField fieldName="Billable__c" class="HOG_Checkstyle" />    
+                                        <lightning:inputField fieldName="Coinsurance__c" />
+                                        <lightning:inputField fieldName="Effective_Date__c" />
+                                        <lightning:inputField fieldName="Family_Deductible_Amt__c" />         
+                                        <lightning:inputField fieldName="Individual_Deductible_Amt__c" />
+                                        <lightning:inputField fieldName="Insurance_Provider__c" />
+                                        <lightning:inputField fieldName="Member_Number__c" />
+                                        <lightning:inputField fieldName="Out_Of_Pocket_Maximum__c" />
+                                        
+                                        
+                                        
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <footer class="slds-modal__footer slds-align_absolute-center" style="    box-shadow: none;
+                                                                                                 margin-top: 10px;background:none;">
+                                <lightning:button type="submit" label="Save" variant="brand"/>
+                            </footer>
+                        </lightning:recordEditForm>
+                        
+                    </div>
+                    
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div> 
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+    </div>
+    
+</aura:component>

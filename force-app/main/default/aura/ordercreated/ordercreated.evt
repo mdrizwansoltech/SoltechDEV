@@ -1,0 +1,6 @@
+<aura:event type="COMPONENT" > 
+
+    <aura:attribute name="createdorder" type="Order" default="{'sObjectType':'Order'}" />
+    <aura:attribute name="currentOrderstep" type="string"/>
+    <aura:attribute name="enable" type="string"/>
+</aura:event>

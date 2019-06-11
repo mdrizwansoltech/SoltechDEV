@@ -1,0 +1,17 @@
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+
+	<!--Created orderId attribute to store orderid-->
+    <aura:attribute name="orderId" type="string"/>
+    <!--created attribute to store order information-->
+    <aura:attribute name="order" type="Order" description="The order object from the "/>
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+    
+    <aura:method name="PassingtoOrderInstructions" action="{!c.PassingtoOrderInstructions}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+     <aura:method name="backtoUpdateInsurance" action="{!c.backtoUpdateInsurance}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+    
+</aura:component>

@@ -1,0 +1,63 @@
+.THIS .HOG_Outerwid{width:86%;}
+
+.THIS label.slds-form-element__label {
+    display: none;
+}
+
+.THIS .HOG_LayoutBorder{
+        background-color:white !important;
+  /*  border-top-left-radius:0px;
+     border-top-right-radius:0px;
+      border-bottom-left-radius:9px;
+     border-bottom-right-radius:9px;*/
+    MARGIN-TOP:1REM;
+    border-radius:9px;
+   
+    padding-bottom:5rem;
+    padding-top: 0.25rem;
+
+
+}
+
+.THIS .HOG_customlab >lightning-input>label{
+    font-size:13px;}
+
+.THIS .HOG_customlab label{font-size:13px;}
+
+.THIS .HOG_Headstyle{
+    margin-top: 1rem;
+    padding: 0.25rem;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border: none;
+    border-bottom: 1px solid rgb(221, 219, 218);
+
+}
+.THIS .HOG_Shiptitle{
+        font-size: 22px;
+    font-weight: bold;
+}
+
+.THIS .HOG_Lookupwid>lightning-grouped-combobox>div{
+    width:91% !important;
+}
+
+.THIS .HOG_Datasec{margin-left: 3rem;
+   margin-left: 3rem;
+    border: 1PX SOLID #c8bebe;
+    padding: .5REM;
+    border-radius: 4PX;
+    background: #f9f9f9;
+    height: 211px;
+    padding-bottom: 1rem;
+    margin-top: 1rem;
+
+}
+.THIS .HOG_Value{margin-left:5px;}
+.THIS .HOG_Labdata .HOG_Label{font-weight:bold !important;color:black;    font-size: 13px;
+}
+.THIS .HOG_Labdata{    padding-bottom: 0.5rem;
+}

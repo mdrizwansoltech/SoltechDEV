@@ -1,0 +1,60 @@
+<!-- ******************************************************************************************************************************
+* Copyright(C)2019
+* Soltech
+* All Rights Reserved
+* Name      : HOG_Selectclientcomponent.cmp
+* Purpose   : This component is used  to show the list of clients in the lookup field and save to order   
+
+**********************************************************************************************************************************
+*   Version No                   Name                           Date                                Description
+
+* ================================================================================================================================
+*        1.0                   Rizwan Mohammed                     04/05/2019                        Initial Version
+       
+*********************************************************************************************************************************** -->
+
+
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
+   <!-- Invoking standard SLDS
+    <ltng:require styles="{!$Resource.SLDS283}"/>-->
+    <!--created attribute to disable or enable the button--> 
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <!--created attribute to store selected clientchatId -->
+    <aura:attribute name="selectedClientId" type="string"/>
+    <!--created attribute to store order information-->
+    <aura:attribute name="order" type="Order" description="The order object from the "/>
+    <!--Created attribute to get standard recordId from the details page-->
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="Selectedclient" type="String" />
+    <aura:attribute name="CurrentStage" type="string"/>
+    <aura:attribute name="createorder" type="Order" default="{'sObjectType':'Order'}" />
+    
+    
+    <aura:registerEvent name="ordercreated" type="c:ordercreated"/>
+    
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:method name="Passingtoselectcomp" action="{!c.getMessage}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+    
+    <!--recordEditForm is used to display output fields and input fields based on object-->
+    <lightning:recordEditForm objectApiName="Order" recordId="{!v.order.Id}" >
+        <!-- the messages component is for error messages -->
+        
+        <lightning:messages />
+        <div class="slds-align_absolute-center HOG_LayoutBorder">
+        <div class="slds-m-around--medium fieldsStyle" Style="width:50%;">
+            <div class="slds-form-element__label HOG_LabelStyle"> Select Client
+                </div>
+        <lightning:inputField fieldName= "Client_Chart__c" aura:id="Client" class="$font-size-10 HOG_WIDTHSTYLE"/>
+        </div>
+            <div class="slds-m-top_medium" align="right" Style ="margin-top: 4rem;">
+           <!-- <lightning:button disabled="{!v.disabled}" variant="brand" onclick="{! c.StartOrder}" name="StartOrder" label="Start Order" />-->
+        </div>
+         </div>
+    </lightning:recordEditForm>
+ 
+</aura:component>

@@ -1,0 +1,143 @@
+<aura:component controller="Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute name="recordId" type="String"/> 
+    <aura:attribute name="mycolumns" type="List" />
+    <aura:attribute name="selectProduct" type="string" />
+    <aura:attribute name="OrderProductList" type="OrderItem[]" />
+    <aura:attribute name="copyLastorderItem" type="OrderItem[]" />
+    <aura:attribute name="prodlist" type="Product2[]" />
+    <aura:attribute name="options" type="List" access="PRIVATE"/>
+    <aura:attribute name="options1" type="List" access="PRIVATE"/>
+     <aura:attribute name="disabled" type="Boolean" default="false" />
+    
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    
+    <!-- Table Row --> 
+         <div class="slds-float_left slds-p-bottom_small">
+         <div class="slds-text-heading_small">
+        <b><h4>Supply Items</h4></b> 
+             </div> </div>
+        <div class="slds-float_right slds-p-bottom_small">
+         <h1 class="slds-page-header__title">New 
+                <lightning:buttonIcon iconName="utility:add"  size="large" variant="bare" alternativeText="Add" onclick="{!c.addRow}"/>
+            </h1></div><div class="slds-float_right slds-p-bottom_small">
+            <!--<lightning:button variant="brand" label="Copy Last Order" title="Brand action" onclick="{!c.copyLastOrder}" /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              -->
+        </div>
+        <div class="container-fluid">        
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div class="slds-truncate">#</div>
+                        </th>
+                        
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="Product Name">Product</div> 
+                            
+                        </th>
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                            
+                        </th>
+                        
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="Available Quantity">Quantity On Hand</div>    
+                            
+                        </th>
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="Quantity Needed">Quantity Needed</div>
+                        </th>
+                        
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="UnitPrice">Unit Price</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Action">Action</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.OrderProductList}" var="orderprod" indexVar="index">
+                        <tr>
+                            <td> 
+                                {!index + 1}
+                            </td>
+                            <td>
+                                <lightning:select aura:id="prodName" name="selectProduct" label="Product" >
+                                    <option value="" label="--None--">
+                                    </option>
+                                    <aura:iteration items="{!v.prodlist}" var="prdLst" >
+                                        <option value="{!prdLst.Id}" label="{!prdLst.Name}" >
+                                            {!prdLst.Name}
+                                        </option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </td>
+                            <td>
+                                <lightning:input name="prvQuanty" type="text" required="true" maxlength="50" label="Previous Quantity" value="{!orderprod.Previous_Quantity__c}" /> 
+                                <!--  <lightning:recordEditForm aura:id="prvQuanty" 
+                                                              objectApiName="OrderItem">
+                                        
+                                        <lightning:inputField fieldName="Previous_Quantity__c" variant="label-hidden"/>
+                                    </lightning:recordEditForm>-->
+                                
+                            </td>
+                            <td>
+                                <lightning:select aura:id="QuantyOnhandsid" label="Quantity On Hand" value="{!orderprod.Quantity_On_Hand__c}" > 
+                                    <aura:iteration items="{!v.options1}" var="option">
+                                        <option text="{!option}" value="{!option1}" />
+                                    </aura:iteration>                        
+                                </lightning:select>
+                                
+                                <!--    <lightning:recordEditForm aura:id="QuantyonHandsID" 
+                                                              objectApiName="OrderItem">
+                                        
+                                        <lightning:inputField fieldName="Quantity_On_Hand__c" variant="label-hidden"/>
+                                    </lightning:recordEditForm> -->
+                                
+                            </td>
+                            <td>
+                                <lightning:select aura:id="QuantyNeededid" label="Quantity Needed" value="{!orderprod.Quantity_Needed__c}" > 
+                                    <aura:iteration items="{!v.options}" var="option">
+                                        <option text="{!option}" value="{!option}" />
+                                    </aura:iteration>                        
+                                </lightning:select>
+                                
+                                
+                                
+                                <!-- <lightning:recordEditForm aura:id="QuantyNeededID" 
+                                                              objectApiName="OrderItem">
+                                        
+                                        <lightning:inputField fieldName="Quantity_Needed__c" variant="label-hidden"/>
+                                    </lightning:recordEditForm> -->
+                            </td>
+                            <td>
+                                <lightning:input name="unitprice" type="number" formatter="currency" maxlength="10" label="Unit Price" value="{!orderprod.UnitPrice}" />
+                                <!--   <lightning:recordEditForm aura:id="unitpriceID" 
+                                                              objectApiName="OrderItem">
+                                        
+                                        <lightning:inputField fieldName="UnitPrice" variant="label-hidden"/>
+                                    </lightning:recordEditForm> -->
+                            </td>
+                            <td>
+                                <a onclick="{!c.removeRow}" data-record="{!index}">
+                                    <lightning:icon iconName="utility:delete" size="small" alternativeText="Delete"/>
+                                    <span class="slds-assistive-text">Delete</span>
+                                </a>
+                            </td> 
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+         <!--   <div class="slds-align_absolute-center slds-p-top_small">
+                <lightning:button variant="brand" label="Submit" title="Brand action" onclick="{!c.save}" />
+            </div> -->
+        </div>
+        
+</aura:component>

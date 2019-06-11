@@ -1,0 +1,104 @@
+<aura:component controller = "Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="Prescrptnprofilelst" type="OrderItem[]" default="{'sobjectType':'OrderItem'}"/> 
+    <aura:iteration items="{!v.Prescrptnprofilelst}" var="Prspflst" >
+        <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                      border-top-right-radius: 9px;    padding: 0.25rem;
+                                      margin-top: 1rem;">
+            
+            <div>
+                <span>  
+                    <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle"></label>
+                </span>
+            </div>
+            <div class="slds-col_bump-right">
+                <div class="slds-col">
+                    <span>
+                        <b>Profile: </b><ui:outputText class="HOG_CustomInput"  value="{!Prspflst.Product2.Name}"/> &nbsp; &nbsp;
+                    </span>
+                </div>
+                
+                <div class="slds-col">
+                    <span> 
+                        <!--<lightning:button variant="brand" label="Edit Profile" title="Brand action" onclick="{!c.navigateToOrderview}"  class="HOG_Newbutton"/>--> 
+                        <b>Target: </b><ui:outputText class="HOG_CustomInput"  value="{!Prspflst.Prescription_Profile__r.Target__c}"/> &nbsp; &nbsp;
+                        <b>High: </b><ui:outputText class="HOG_CustomInput"  value="{!Prspflst.Prescription_Profile__r.High__c}"/> &nbsp; &nbsp;
+                        <b>Low: </b><ui:outputText  value="{!Prspflst.Prescription_Profile__r.Low__c}"/>  &nbsp; &nbsp; 
+                    </span>
+                </div>
+                <span> 
+                    <lightning:button variant="brand" label="Edit Profile" title="Brand action" onclick="{!c.navigateToOrderview}"  class="HOG_Newbutton"/>  
+                    <lightning:button variant="brand" label="Manual Selection" title="Brand action" onclick="{!c.addProfileMethod}"  class="HOG_Newbutton"/>
+                    <lightning:button variant="brand" label="Auto Selection" title="Brand action" onclick="{!c.addProfileMethod}"  class="HOG_Newbutton"/>  
+                </span>
+            </div>
+            <div class="slds-col_bump-right">
+                <div class="slds-col">
+                    <span>
+                        <b>Required Doses: </b><ui:outputText  value="{!Prspflst.Quantity_Needed__c}"/>
+                    </span>    
+                </div>
+                <div class="slds-col_bump-right">
+                    <span>
+                        <b>Unfilled Doses: </b><ui:outputText  value="{!Prspflst.Quantity_On_Hand__c}"/>
+                    </span>    
+                </div>
+            </div>
+            
+            
+            
+        </div> 
+        
+        
+        <div class="container-fluid">        
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col">
+                            <div class="slds-truncate">#</div>
+                        </th>
+                        
+                        <th scope="col">
+                            
+                            <div class="slds-truncate " title="SKU">SKU</div> 
+                            
+                        </th>
+                        <aura:if isTrue="{!v.statusValue}">
+                            <th scope="col">
+                                
+                                <div class="slds-truncate" title="Lot">Lot</div> 
+                                
+                            </th>
+                        </aura:if>
+                        <th scope="col">
+                            
+                            <div class="slds-truncate" title="Cost Code">Cost Code</div> 
+                            
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Expiration">Expiration</div>    
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Strength">Strength</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Quantity">Quantity</div>
+                        </th>
+                        
+                        <th scope="col">
+                            <div class="slds-truncate" title="Owner">Owner</div>
+                        </th>
+                        
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
+            
+        </div>
+    </aura:iteration>
+    
+</aura:component>

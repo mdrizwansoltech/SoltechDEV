@@ -1,0 +1,53 @@
+<aura:component controller = "Pharmacycontroller" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<!-- Aura Attribute for store single OrderItem[standard Object] Instance
+         And Store Index of Particular Instance -->
+    <aura:attribute name="OrderItemInstance" type="OrderItem" default="{'sobjectType':'OrderItem'}"/>
+    <aura:attribute name="rowIndex" type="String"/>
+    <aura:attribute name="objInfo" type="OrderItem" default="{sobjectType : 'OrderItem'}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="HOG_RXDeleteRowEvt" type="c:HOG_RXDeleteRowEvt"/> 
+    <aura:registerEvent name="AddRowEvt" type="c:AddNewRowEvt"/>
+    <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    <aura:attribute name="OrderId" type="String"/> 
+    
+    <!-- Table Row -->   
+    <tr class="slds-text-title_caps">
+        <td> 
+            {!v.rowIndex + 1}
+        </td>
+        <td>
+             <ui:inputSelect aura:id="ProductGroup" class="slds-select" 
+                            value="{!v.OrderItemInstance.Product_Group__c}" 
+                             /><!--change="{!c.onPicklistChange}"-->
+        </td>
+        <!--<td>
+             <ui:inputSelect  aura:id="Products" class="slds-select" 
+                             value="{!v.OrderItemInstance.ProductCode__c}" change="{!c.getrxPreOrderItems}" />
+         </td>-->
+        
+        <td>
+            <ui:outputText value="{!v.OrderItemInstance.Previous_Quantity__c}"/>
+        </td>
+        <td>
+           <lightning:input name="QuantityOnHand" type="number" formatter="Number" maxlength="10"  
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Quantity_On_Hand__c}" required="true" /> 
+        </td>
+        <td>
+          <lightning:input name="QuantityNeeded" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.OrderItemInstance.Quantity_Needed__c}" required="true"/> 
+        </td>
+        
+         <td>
+          <ui:outputText aura:id="priorAuthID" value="{!v.OrderItemInstance.Prior_Authorization1__c}"/>
+        </td>
+        
+        <td>
+                  <a onclick="{!c.removeRow}">
+                   <lightning:icon variant="error" iconName="utility:delete" class="slds-icon slds-icon_small" size="small" alternativeText="icon"/>
+                   <span class="slds-assistive-text">Delete Icon</span>
+                  </a>
+         </td>
+       
+    </tr>
+    
+</aura:component>

@@ -1,0 +1,21 @@
+.THIS .HOG_customlab {    display: inline-flex;    margin-left: 0.5rem;
+
+}
+
+
+.THIS .HOG_HeaderStyle{    padding:0.5rem;background-color:grey;
+}
+.THIS .HOG_HeaderStyle>div{color:white !important;}
+.THIS .HOG_Labelstyle{
+    font-size:18px;   margin-left: 0.5rem;
+    
+}
+.THIS .HOG_Datestyle{
+    display: inline;
+    margin-left: 15px;
+    font-size: 13px;
+    font-weight: bold;}
+
+.THIS .HOG_Tabstyle_Supplier{
+    border-radius:0 ;
+}

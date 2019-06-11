@@ -1,0 +1,16 @@
+.THIS .HOG_WIDTHSTYLE label {
+    
+    display:none !important;
+}
+
+.THIS .HOG_LabelStyle {
+    font-size:20px;
+    font-weight:bold;
+  /*  margin-bottom:2rem;*/
+}
+.THIS .HOG_LayoutBorder{
+        background-color:white;
+    border-radius:9px;
+    margin-top:1rem;
+}
+.THIS .fieldsStyle{margin-top:0rem;}

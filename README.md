@@ -1,2 +1,9 @@
-# SoltechDEV
-Last Day code back up 
+# SFDX App
+
+## Dev, Build and Test
+
+## Resources
+
+## Description of Files and Directories
+
+## Issues

@@ -1,0 +1,304 @@
+<aura:component controller="Pharmacycontroller"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	  <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    
+     <aura:attribute name="OrderId" type="string"/>
+     <aura:attribute name="Pharmacy" type="string"/>
+     <aura:attribute name="Product" type="string"/>
+     <aura:attribute name="CostCode" type="string"/>
+     <aura:attribute name="TargetDosage" type="Integer"/>
+     <aura:attribute name="LowStart" type="Integer"/>
+     <aura:attribute name="HighStart" type="Integer"/>
+      <aura:attribute name="LowEnd" type="Integer"/>
+     <aura:attribute name="HighEnd" type="Integer"/>
+    
+     <aura:attribute name="RequiredDoses" type="Integer"/>
+     <aura:attribute name="UnfilledDoses" type="Integer"/>
+     <aura:attribute name="SolutionDetail" type="Integer"/>
+     <aura:attribute name="Dosege" type="Integer"/>
+     <aura:attribute name="Kits" type="Integer"/>
+     <aura:attribute name="CompleteDoses" type="Integer"/>
+    <aura:attribute name="TargetDelta" type="Integer"/>
+    
+  
+     <aura:attribute name="AssetItemList" type="Asset[]"/>
+    <aura:attribute name="AssetItemListQuantitycheck" type="Asset[]"/>
+    <aura:attribute name="SelectedAssetItemList" type="Asset[]"/>
+      <aura:attribute name="ProductId" type="string"/>
+    <aura:attribute name="InstockFlag" type="boolean"  default="false"/>
+    
+      <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    
+    <header class="slds-modal__header"> Manually Select Factor</header>
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Pharmacy</span>
+     </label>
+    <ui:outputText value="{!v.Order.Pharmacy__r.Name}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Product</span>
+     </label>
+      
+        <ui:outputText value="{!v.Product}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+     <label class="uiLabel-left form-element__label uiLabel">
+    <span>CostCode</span>
+     </label>
+    <ui:outputText value="{!v.CostCode}" />
+    </div>
+    
+    <ui:inputCheckbox aura:id="InStock" label="In Stock Only" change="{!c.onCheck}"/>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+<label class="uiLabel-left form-element__label uiLabel">
+    <span>Target</span>
+</label>
+ <lightning:input name="Target" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.TargetDosage}" />
+             
+</div>
+    
+       <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+<label class="uiLabel-left form-element__label uiLabel">
+    <span>Low</span>
+</label>
+<lightning:input name="Low" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.LowStart}" />
+  
+           <lightning:input name="Low" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.LowEnd}" />
+     
+</div>
+    
+       <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+<label class="uiLabel-left form-element__label uiLabel">
+    <span>High</span>
+</label>
+<lightning:input name="High" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.HighStart}" />
+           <lightning:input name="High" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!v.HighEnd}" />
+     
+</div>
+    
+    <lightning:button type="Next" label="Search Again" variant="brand" onclick="{!c.AddToKit}"/>
+     
+    
+    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    <div class="slds-truncate" title="INVDet">INVDet</div>
+                </th>
+                
+                <th scope="col">
+                    
+                    <div class="slds-truncate " title="SKU">SKU</div> 
+                    
+                </th>
+                <th scope="col">
+                    
+                    <div class="slds-truncate" title="Lot">Lot</div> 
+                    
+                </th>
+                               
+                <th scope="col">
+                    <div class="slds-truncate" title="Expiration">Expiration</div>    
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Strengh">Strengh</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Low">Qty in Stock</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Low">Qty to Add</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.AssetItemList}" var="item" indexVar="index">
+                <tr class="slds-text-title_caps">
+                    
+                    
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.INVDet__c}" /> 
+                        
+                    </td>
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.StockKeepingUnit}" />
+                    </td>
+                  
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Lot__c}" />
+                    </td>
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Expiration_Date__c}"  />
+                    </td>
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Strength__c}" />
+                    </td>
+                      <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Quantity_In_Stock__c}" />
+                    </td>
+                    
+                    
+                    <td>
+                        <lightning:input name="Quantity" type="number" formatter="Number" maxlength="10" 
+                            class="HOG_CustomInput" value="{!item.Quantity}"  onchange="{!c.QuantityCheck}"/>
+    
+                        <!--<ui:inputNumber class="HOG_CustomInput" aura:id="Quantity"  value="{!item.Quantity}"/> -->
+                    </td>
+                    
+                </tr>
+            </aura:iteration>
+        </tbody>
+        
+    </table>
+    
+     <lightning:button type="Next" label="+ Add Kit" variant="brand" onclick="{!c.AddToKit}"/>
+
+    
+    
+    
+    
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Required Doses</span>
+     </label>
+    <ui:outputText value="{!v.RequiredDoses}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Unfilled Doses</span>
+     </label>
+      
+        <ui:outputText value="{!v.UnfilledDoses}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+     <label class="uiLabel-left form-element__label uiLabel">
+    <span>Solution Detail</span>
+     </label>
+    <ui:outputText value="{!v.SolutionDetail}" />
+    </div>
+
+    
+       
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Dosege</span>
+     </label>
+    <ui:outputText value="{!v.Dosege}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+    <label class="uiLabel-left form-element__label uiLabel">
+    <span>Complete Doses</span>
+     </label>
+      
+        <ui:outputText value="{!v.CompleteDoses}" />
+    </div>
+    
+    <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+     <label class="uiLabel-left form-element__label uiLabel">
+    <span>Kits</span>
+     </label>
+    <ui:outputText value="{!v.Kits}" />
+    </div>
+    
+      <div class="uiInput uiInputNumber uiInput--default uiInput--input">
+     <label class="uiLabel-left form-element__label uiLabel">
+    <span>Target Delta</span>
+     </label>
+    <ui:outputText value="{!v.TargetDelta}" />
+    </div>
+    
+     
+    
+    
+    <!-- Selected Asset list -->
+     <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+        <thead>
+            <tr class="slds-text-title_caps">
+                
+                
+                <th scope="col">
+                    
+                    <div class="slds-truncate " title="SKU">SKU</div> 
+                    
+                </th>
+                <th scope="col">
+                    
+                    <div class="slds-truncate" title="Lot">Lot</div> 
+                    
+                </th>
+                      
+                  <th scope="col">
+                    <div class="slds-truncate" title="Low">Cost Code</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Expiration">Expiration</div>    
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Strengh">Strengh</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate" title="Low">Quantity</div>
+                </th>
+               
+                  <th scope="col">
+                    <div class="slds-truncate" title="Low">Owner</div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.SelectedAssetItemList}" var="item" indexVar="index">
+                <tr class="slds-text-title_caps">
+                    
+                    
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.INVDet__c}" /> 
+                        
+                    </td>
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.StockKeepingUnit}" />
+                    </td>
+                  
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Lot__c}" />
+                    </td>
+                    
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Cost_Code__c}" />
+                    </td>
+                    
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Expiration_Date__c}"  />
+                    </td>
+                    <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Strength__c}" />
+                    </td>
+                      <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Quantity}" />
+                    </td>
+                          <td>
+                        <ui:outputText class="HOG_CustomInput" value="{!item.Owner.Name}" />
+                    </td>              
+                </tr>
+            </aura:iteration>
+        </tbody>
+        
+    </table>
+    
+    <lightning:button type="Cacel" label="Cancel" variant="brand" onclick="{!c.CancelPHPVarification}"/>
+    <lightning:button type="Next" label="Add Complete Doses to Order" variant="brand" onclick="{!c.NextPHPVarification}"/>
+
+    
+</aura:component>

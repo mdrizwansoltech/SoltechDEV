@@ -1,0 +1,476 @@
+<aura:component controller="Pharmacycontroller"  
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <!--Created orderId attribute to store orderid-->
+    <aura:attribute name="orderId" type="string"/>
+    
+    <!--created attribute to store order information-->
+    <!--  <aura:attribute name="order" type="Order" description="The order object from the "/> -->
+    
+    <!--*****-->
+    
+    <aura:attribute name="recordId" type="String"/> 
+    <aura:attribute name="mycolumns" type="List" />
+    <aura:attribute name="selectProduct" type="string" />
+    <aura:attribute name="OrderProductList" type="OrderItem[]" />
+    <aura:attribute name="prodlist" type="Product2[]" />
+    <aura:attribute name="options" type="List" access="PRIVATE"/>
+    <aura:attribute name="options1" type="List" access="PRIVATE"/>
+    <aura:attribute name="disabled" type="Boolean" default="false" />
+    <aura:attribute name="disabled1" type="Boolean" default="false" />
+    <aura:attribute name="OrderSave" type="Boolean" default="false" />
+    <aura:attribute name="selectedActProds" type="OrderItem[]" />
+    <aura:attribute name="rowIndex" type="String"/>
+    <!--Created ListOfRecords attribute to store insurance record-->
+    <aura:attribute name="ListOfRecords" type="List"/>
+    <aura:attribute name="OrderWrapProductList" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    
+    <!---****--> 
+    <!--Supply Item Attributes -->
+    
+    <aura:attribute name="supplyOrderId" type="String"/> 
+    <aura:attribute name="supplymycolumns" type="List" />
+    <aura:attribute name="supplyselectProduct" type="string" />
+    <aura:attribute name="supplyOrderProductList" type="OrderItem[]" />
+    <aura:attribute name="selectedTempProductList" type="OrderItem[]" />
+    <aura:attribute name="selectedTemProds" type="OrderItem[]" />
+    <aura:attribute name="supplycopyLastorderItem" type="OrderItem[]" />
+    <aura:attribute name="rxCopyLastorderItem" type="OrderItem[]" />
+    <aura:attribute name="rxOrderProductList" type="OrderItem[]" />
+    <aura:attribute name="supplyprodlist" type="Product2[]" />
+    <aura:attribute name="prodtemps" type="Product_Template__c[]" />
+    <aura:attribute name="ClientChatId" type="String"/> 
+     <aura:attribute name="SelectedStatus" type="String"/> 
+    
+    <aura:attribute name="supplyoptions" type="List" access="PRIVATE"/>
+    <aura:attribute name="supplyoptions1" type="List" access="PRIVATE"/>
+    
+    <aura:attribute name="supplyrowIndex" type="String"/>
+    <aura:attribute name="statusValue" type="Boolean" default="false" />
+    <aura:attribute name="InsurancestatusValue" type="Boolean" default="false" />
+    <!-- ENDS here -->
+    
+    <aura:attribute name="Order" type="Order" default="{'sobjectType':'Order' }"/>
+    
+    <!--Aura Attribute for store OrderItem Object List as Array-->    
+    <aura:attribute name="RXOrderItemList" type="OrderItem[]"/> 
+    
+    <aura:attribute name="SupplyOrderItemList" type="OrderItem[]"/> 
+    
+    <!--Aura Attribute for pricebookEntry Object details--> 
+    <aura:attribute name="pricebookEntryvalue" type="PriceBookEntry[]" />
+    
+    <!--Event handler for Add and Delete Supply Row Event which is fire from Child Component-->    
+    <aura:handler name="HOG_SupplyDeleteRowEvt" event="c:HOG_SupplyDeleteRowEvt" action="{!c.removeDeletedSupplyRow}"/>
+    <aura:handler name="AddSupplyRowEvt" event="c:AddNewRowEvt" action="{!c.addNewSupplyRow}"/>
+    
+    <!--Event handler for Add and Delete RX Row Event which is fire from Child Component-->    
+    <aura:handler name="HOG_RXDeleteRowEvt" event="c:HOG_RXDeleteRowEvt" action="{!c.removeDeletedRXRow}"/>
+    <aura:handler name="AddRowEvt" event="c:AddNewRowEvt" action="{!c.addNewRow}"/>
+    
+    <aura:registerEvent name="HOG_GetOrderStep" type="c:HOG_GetOrderStep"/>
+     <aura:registerEvent name="HOG_RefreshChildComponentEvent" type="c:HOG_RefreshChildComponentEvent"/>
+    <aura:registerEvent name="HOG_StatusChangeEvent" type="c:HOG_StatusChangeEvent"/>
+     <aura:registerEvent name="InsuranceCreationEvent" type="c:HOG_ProductInsuranceCreationEvent"/>
+    
+    <aura:method name="PassingtoPharmacyWorking" action="{!c.PassingtoPharmacyWorking}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    <aura:method name="backtoOrderInstructions" action="{!c.backtoOrderInstructions}" access="public">
+        <aura:attribute name="orderid" type="string"/>
+    </aura:method>
+    
+    <div class="slds-grid slds-wrap slds-align_absolute-left HOG_LayoutBorder">
+        <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12  ">
+             <span> 
+               <span class="slds-form-element__label HOG_Shiptitle"> Order Review</span>
+                 <br/><br/>
+              </span>
+            </div>
+    </div>
+    
+    
+    <lightning:layout verticalAlign="stretch" multipleRows="true" class="x-large">
+        <div class="slds-large-size--2-of-12  slds-p-bottom_x-small slds-p-left_small slds-float_left"> 
+            <lightning:layoutItem flexibility="auto"  padding="around-small" class="slds-box">
+                <span>
+                    Status 
+                 <ui:inputSelect  aura:id="StatusValues" class="slds-select" 
+                             value="{!v.SelectedStatus}"  change="{!c.onchangestatus1}"/>
+                    </span>
+                <lightning:recordEditForm aura:id="recordViewForm"                                     
+                                          objectApiName="Order" recordId="{!v.recordId}"  onsubmit="{!c.handleOnSubmit }" onsuccess="{!c.RefreshPage}">
+                    <lightning:messages />
+                    <lightning:inputField fieldName="Pharmacy__c" value="{!v.Order.Pharmacy__c}"  aura:id="Pharmacy"/>
+                    <!--<lightning:inputField fieldName="Status" aura:id="StatusValues" onchange="{!c.onchangestatus1}"/> -->
+                    <lightning:outputField fieldName="Client_Name_C__c"  aura:id="ClientName"/>
+                    <lightning:outputField fieldName="Medical_Disorder__c"  aura:id="MedicalDisorder"/>
+                    <lightning:outputField fieldName="Severity__c"   aura:id="Severity"/>
+                    <lightning:outputField fieldName="Dosage_Range_From__c"  aura:id="DosageRangeFrom" />
+                    <lightning:outputField fieldName="Dosage_To__c"  aura:id="DosageTo" />
+                    <lightning:inputField fieldName="EffectiveDate"  aura:id="EffectiveDate"/>
+                    <lightning:inputField fieldName="Deliver_By_Date__c"  aura:id="DeliverByDate"/>
+                    <!-- <lightning:outputField fieldName="Placed_By__c" />-->
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Placed_By__c" aura:id = "PlacedBy" />
+                    </lightning:layoutItem>
+                    
+                    
+                    <!--    <lightning:outputField fieldName="RPH_Consult__c" />-->
+                    <lightning:layoutItem size="12">
+                        
+                        <lightning:inputField aura:id = "Rhpconsultant" fieldName="RPH_Consult__c" value="{!v.Order.RPH_Consult__c}"  />
+                        
+                    </lightning:layoutItem>
+                    
+                    <!--  <lightning:outputField fieldName="Ship_To_Name__c" />-->
+                    <lightning:layoutItem size="12">
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Ship_To_Name__c" aura:id = "ShipToName" /> 
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Street_Name1__c" aura:id = "StreetName"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Address_Line__c" aura:id = "AddressLine2"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="City1__c" aura:id = "City"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="State1__c" aura:id = "State" />
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Zip_Code1__c" aura:id = "ZipCode" />
+                    </lightning:layoutItem>
+                    <lightning:inputField fieldName="Ship_Via__c" aura:id = "ShipVia"/>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField  aura:id = "Signaturerequired" fieldName="Signature__c"  />
+                        
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Order_Notes__c"  aura:id="OrderNotes"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem size="12">
+                        <lightning:inputField fieldName="Phone__c" aura:id = "Phone"/>
+                    </lightning:layoutItem>
+                    <!--Picklist-->
+                    <lightning:outputField fieldName="Level__c"   aura:id="Level"/>
+                    <lightning:button aura:id="submit" type="submit" label="Save" class="slds-m-top_medium"  />
+                    
+                </lightning:recordEditForm>
+            </lightning:layoutItem>
+        </div>
+        <div class="slds-large-size--10-of-12  slds-p-bottom_x-small slds-p-left_small slds-float_right"> 
+            <lightning:layoutItem flexibility="auto" padding="around-small">
+                <lightning:layoutItem   class="slds-box" >
+                    <!--**************************-->
+                    
+                    <!-- Table Row --> 
+                    <div class="slds-m-around--x-large">
+                        <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                                      border-top-right-radius: 9px;    padding: 0.25rem;
+                                                      margin-top: 1rem;">
+                            <div>
+                                <span>  
+                                    <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Pharmacy Items</label>
+                                </span>
+                            </div>
+                            
+                            <div class="slds-col_bump-left">
+                                <span> 
+                                  <!--  <lightning:button variant="brand" label="Copy Last Order" title="Brand action" onclick="{!c.copyLastOrderRX}"  class="HOG_Newbutton"/> -->
+                                    <lightning:button variant="brand" label="Add New Product" title="Brand action" onclick="{!c.RXaddRow}"  class="HOG_Newbutton"/> 
+                                </span>
+                            </div>
+                               </div> 
+                        <div class="container-fluid">        
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                                <thead>
+                                    <tr class="slds-text-title_caps">
+                                        <th scope="col">
+                                            <div class="slds-truncate">#</div>
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate " title="Product Name">Product</div> 
+                                            
+                                        </th>
+                                        <aura:if isTrue="{!v.statusValue}">
+                                            <th scope="col">
+                                                
+                                                <div class="slds-truncate" title="Product Name">Dosage</div> 
+                                                
+                                            </th>
+                                        </aura:if>
+                                        <th scope="col">
+                                            
+                                            <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                                            
+                                        </th>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Available Quantity">Quantity On Hand</div>    
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Quantity Needed">Quantity Needed</div>
+                                        </th>
+                                      
+                                           
+                                            <aura:if isTrue="{!v.InsurancestatusValue}">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="PANumber">PA Expiration</div>
+                                            </th>
+                                           </aura:if>
+                                        
+                                          <aura:if isTrue="{!v.statusValue}">
+                                             <th scope="col">
+                                                <div class="slds-truncate" title="Rx Number">Rx Number</div>
+                                            </th>
+                                            <!--
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Insurance">Insurance</div>
+                                            </th>-->
+                                        </aura:if>
+                                        
+                                        <th scope="col">
+                                            <div class="slds-truncate" title="Action">Action</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                   <aura:iteration items="{!v.RXOrderItemList}" var="orderprod" indexVar="index">
+                                    
+                                    <!--<aura:iteration items="{!v.OrderWrapProductList}" var="orderprod" indexVar="index"> PrescriptionInstance="{!orderprod.Prescription}"-->
+                                        <c:HOG_RXProductRowRequest OrderItemInstance="{!orderprod}"  rowIndex="{!index}"  statusValue ="{!v.statusValue}"  orderId="{!v.recordId}" InsurancestatusValue="{!v.InsurancestatusValue}"/>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                                             
+
+                    </div>
+                    <!-- Supply Item Code -->
+                    
+                    <!-- Supply product Header and Buttons --> 
+                    <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                                  border-top-right-radius: 9px;    padding: 0.25rem;    margin-top: 1rem;
+                                                  ">
+                        <div>
+                            <span>  <label class="slds-form-element__label slds-text-body_regular HOG_Labelstyle">Supply Items</label>
+                                
+                            </span>
+                        </div>
+                        
+                        <div class="slds-col_bump-left">
+                            <span> 
+                                
+                                <lightning:select aura:id="temName" name="selectTemplate" label="Template" variant = "label-hidden" class="HOG_CustomSelect">
+                                    <option value="" label="--SelectTemplate--">
+                                    </option>
+                                    <aura:iteration items="{!v.prodtemps}" var="tmpLst" >
+                                        <option value="{!tmpLst.Id}" label="{!tmpLst.Name}" >
+                                            {!tmpLst.Name}
+                                        </option>
+                                    </aura:iteration>
+                                </lightning:select>
+                                
+                                <lightning:button variant="brand" label="Add New Product" title="Brand action" onclick="{!c.supplyaddRow}"  class="HOG_Newbutton"/>       
+                                <lightning:button variant="brand" label="Add Template Items" title="Brand action" onclick="{!c.addTemplateItems}" class="HOG_Newbutton"/>
+                                
+                            </span>
+                        </div>
+                        
+                    </div> 
+                    <!-- Ends Here -->
+                    <!--Table Part-->           
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer"> 
+                        <thead>
+                            <tr >
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate">#</div>
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Category">Category</div> 
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Product Name">Product</div> 
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Previous Quantity">Previous Quantity</div> 
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Quantity Needed">Quantity Needed</div>    
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Quantity In Stock">Quantity In Stock</div>    
+                                </th>
+                                <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                    <div class="slds-truncate" title="Action">Action</div>
+                                </th>
+                            </tr>
+                        </thead>   
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.SupplyOrderItemList}" var="item" indexVar="index">
+                                <c:HOG_SupplyProductRowItem OrderItemInstance="{!item}" rowIndex="{!index}" />
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <br/>
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!--******ENDS Here***************-->
+                </lightning:layoutItem>
+                
+                
+                <lightning:layoutItem  class="slds-box">
+                    <lightning:recordEditForm aura:id="recordViewForm"                                     
+                                              objectApiName="Order" 
+                                              recordId="{!v.recordId}">
+                        <lightning:messages />
+                        <!--   <lightning:InputField fieldName="Instructions__c" />-->
+                        
+                        <div class="slds-grid slds-wrap  HOG_LayoutBorder">
+                            
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_6-of-12 HOG_OrderIns" >
+                                
+                                <span> 
+                                    <lightning:inputField aura:id = "Instructions"  fieldName="Instructions__c"/>
+                                </span>
+                                
+                            </div>
+                            
+                        </div>
+                        
+                        
+                        
+                        <div class="slds-float_left slds-p-bottom_small">
+                            <div class="slds-text-heading_small">
+                                <b><h4>Insurance</h4></b> <b></b>
+                                
+                            </div> 
+                            
+                        </div>
+                        
+                        <lightning:layoutItem class="slds-box">
+                            
+                            <!-- <lightning:button variant="brand" label="New" title="New" onclick="{! c.newInsuranceForm}"   />-->
+                            <lightning:recordEditForm recordId="{!v.order.Id}" objectApiName="Order">
+                                <lightning:messages />
+                                <!-- <lightning:outputField fieldName="Client_Name_C__c" />-->
+                            </lightning:recordEditForm>
+                            
+                            <div class="slds-grid" style="background:white;    border-top-left-radius: 9px;
+                                                          border-top-right-radius: 9px;">
+                                
+                                <div class="slds-col_bump-left">
+                                    <span>  <lightning:button variant="brand" label="New" title="New" onclick="{! c.newInsuranceForm}"  class="HOG_Newbutton" />
+                                    </span>
+                                </div>
+                            </div>           
+                            
+                            <div class= "slds-grid slds-wrap custwrap"  style="background:white;">
+                                
+                                <!-- Displaying Insurance records in the form of table-->
+                                <table align="Center" class="slds-table slds-table_bordered slds-table_striped slds-table_resizable-cols slds-border_left slds-border_right" >
+                                    
+                                    <thead>
+                                        
+                                        <tr class="slds-line-height_reset  ">
+                                            
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Policy #"> Policy #</div>
+                                                
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="order"> Order </div>
+                                                
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Category ">Category</div>
+                                                
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Provider"> Provider </div>
+                                                
+                                            </th>
+                                            
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Name</div>
+                                                
+                                            </th>
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Plan Name">Plan Type</div>
+                                            </th>
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Plan Name">Effective Date</div>
+                                            </th>
+                                            <th class="slds-is-sortable HOG_HeaderStyle" scope="col">
+                                                <div class="slds-truncate slds-is-sortable" title="Plan Name">Termination Date</div>
+                                            </th>
+                                            
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.ListOfRecords}" var="Record"> 
+                                            
+                                            <tr>
+                                                
+                                                <th scope="row">
+                                                    <a href="javascript:void(0);" data-IncId="{!Record.Id}" onclick="{!c.OpenEditModel}"  data-aura-class="forceActionLink" >
+                                                        <div class="slds-truncate" title="{!Record.Policy_Number__c}">{!Record.Policy_Number__c}</div>
+                                                    </a>     
+                                                </th>
+                                                
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Coverage_Order__c}">{!Record.Coverage_Order__c}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Category__c}">{!Record.Category__c}</div>
+                                                </th>
+                                                
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Insurance_Provider_Name__c}">{!Record.Insurance_Provider_Name__c}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Plan_Name__c}">{!Record.Plan_Name__c}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Plan_Type__c}">{!Record.Plan_Type__c}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Effective_Date__c}">{!Record.Effective_Date__c}</div>
+                                                </th>
+                                                <th scope="row">
+                                                    <div class="slds-truncate" title="{!Record.Termination_Date__c }">{!Record.Termination_Date__c }</div>
+                                                </th>
+                                                
+                                            </tr>
+                                            
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </lightning:layoutItem>
+                        
+                    </lightning:recordEditForm>
+                </lightning:layoutItem>
+            </lightning:layoutItem>
+        </div>
+    </lightning:layout>
+    
+    
+</aura:component>
